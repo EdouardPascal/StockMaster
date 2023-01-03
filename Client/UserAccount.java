@@ -1,7 +1,11 @@
 package Client;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 
 
 public class UserAccount implements Serializable {
@@ -25,6 +29,7 @@ public class UserAccount implements Serializable {
 
     }
 
+
     //we will create accessor and  mutators
     public String getPassword() {
         return password;
@@ -39,8 +44,15 @@ public class UserAccount implements Serializable {
     }
 
     public double getMoney_invested() {
+        try {
+            refresh_money_invested();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         return money_invested;
+
     }
+
 
     public double getTotal_money() {
         return total_money;
@@ -54,9 +66,22 @@ public class UserAccount implements Serializable {
         this.money_available = money_available;
     }
 
-    public void setMoney_invested(double money_invested) {
-        this.money_invested = money_invested;
+    public void refresh_money_invested() throws Exception {
+
+        try {
+            double invested_money = 0;
+            for (Map.Entry<String, Double> entry : list_stock.entrySet()) {
+
+                String key = entry.getKey();
+                Double value = entry.getValue();
+                invested_money += real_time_price(key) * value;
+            }
+            this.money_invested = invested_money;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
+
 
     public void setPassword(String password) {
         this.password = password;
@@ -70,6 +95,47 @@ public class UserAccount implements Serializable {
         this.username = username;
     }
 
+    /////////
+    public double real_time_price(String stock_code) throws Exception //get the real time price of stock using its code
+    {
+        String url = "https://www.google.com/finance/quote/" + stock_code + ":NASDAQ?hl=en";//build url using stock code
+        String texts;
+        Document page = (Jsoup.connect(url)).get();
 
+
+        texts = page.html();
+
+
+        int start = texts.indexOf("<div class=\"YMlKec fxKbKc\">", 0);//used to find price by looking a specific point of html parsed
+        int from = texts.indexOf(">", start);
+        int stop = texts.indexOf("</div", from);
+
+        String price = texts.substring(from + 1, stop);
+        return (Double.parseDouble(price)); //transform the string price into double and return it
+
+
+    }
+
+    public void buy_stock(String stock_code, double amount_money)//take the stock code and the amount of money invested and perform the buying
+    {
+        try {
+            double quantity_bought = amount_money / real_time_price(stock_code); //calculate quantity brought at the time
+
+            if (list_stock.containsKey(stock_code)) { //if we already have that stock we just update its value in the list
+                double new_quantity = list_stock.get(stock_code) + quantity_bought;
+                list_stock.replace(stock_code, new_quantity);
+
+            } else {
+                list_stock.put(stock_code, quantity_bought);
+            }
+            this.setMoney_available(getMoney_available() - amount_money);//update money invested and all
+
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+
+    }
 }
 
