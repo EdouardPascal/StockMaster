@@ -1,85 +1,72 @@
 package Client;
 
+import com.formdev.flatlaf.FlatLightLaf;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class ConnectedFrames extends JFrame {
 
-    JPanel top_page, main;
+    ConnectedPanel home_panel, account_panel, transaction_panel, deposit_panel;
     JLabel stock_teacher;
     JTextField search;
     JButton home_button, buy_sell_button, transaction_buttton, logout_button;
     JMenuBar menuBar;
 
+    JPanel top_page = new JPanel();
     JMenu account_menu;
     JMenuItem logout_item;
+    JTabbedPane tabbedPane;
 
     public ConnectedFrames() throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        UIManager.setLookAndFeel(new FlatLightLaf());
+        UIManager.put("TabbedPane.selectedBackground", Color.blue);
+        UIManager.put("TabbedPane.showTabSeparators", true);
+        UIManager.put("TabbedPane.tabSeparatorsFullHeight", true);
+        tabbedPane = new JTabbedPane(JTabbedPane.LEFT);
+
+        tabbedPane.setFocusable(false);
+        tabbedPane.setForeground(Color.WHITE);
+        //tabbedPane.setForeground(Color.BLUE);
+        home_panel = new ConnectedPanel(); //create home tab
+        transaction_panel = new ConnectedPanel(); //create transaction tab
+        deposit_panel = new ConnectedPanel();
+        account_panel = new ConnectedPanel();
+
 
         stock_teacher = new JLabel("StockMaster");
         stock_teacher.setIcon(new ImageIcon("icon/stock-market.png"));
-        JPanel search_panel = new JPanel();
+
+        top_page.add(stock_teacher);
+
+        JPanel search_panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         search = new JTextField(30);
+        search.setBorder(BorderFactory.createEmptyBorder());
+        search_panel.setBorder(BorderFactory.createLoweredBevelBorder());
 
         search_panel.add(search);
+
+        top_page.add(search_panel);
 
         JButton search_button = new JButton();
         search_button.setIcon(new ImageIcon("icon/search.png"));
         search_panel.add(search_button);
         search_panel.setOpaque(false);
-        menuBar = new JMenuBar();
 
+        tabbedPane.add("Home", home_panel);
 
-        top_page = new JPanel();
-        top_page.add(stock_teacher);
-        top_page.add(search_panel);
+        tabbedPane.add("Add/Retract Funds", deposit_panel);
+        tabbedPane.add("Buy/Sell Stock", transaction_panel);
+        tabbedPane.add("Account", account_panel);
 
-        home_button = new JButton("Home");
-        top_page.add(home_button);
-        menuBar = new JMenuBar();
+        // tabbedPane.setLayout(());
 
-        logout_item = new JMenuItem("Logout");
-        account_menu = new JMenu("Account");
-        JMenuItem user_change = new JMenuItem("Change Username");
-        JMenuItem pass_change = new JMenuItem("Change PassWord");
-
-        account_menu.add(user_change);
-        account_menu.add(pass_change);
-        account_menu.add(logout_item);
-
-
-        menuBar.add(account_menu);
-
-        top_page.add(menuBar);
-
-        buy_sell_button = new JButton("Buy/Sell Stock");
-        top_page.add(buy_sell_button);
-
-        transaction_buttton = new JButton("Add/Take Funds");
-        top_page.add(transaction_buttton);
-
-
-        top_page.setBounds(0, 0, getWidth(), 10);
-        top_page.setBackground(new Color(218, 234, 246));
-        top_page.setMinimumSize(new Dimension(getWidth(), 50));
-        top_page.setMaximumSize(new Dimension(getWidth(), 50));
-
-
-        main = new JPanel();
-        main.setBackground(Color.BLUE);
-        // main.setBounds(0, top_page.getHeight(), getWidth(), 50);
-        // main.setSize(850, 50);
-
-        this.getContentPane().add(BorderLayout.NORTH, top_page);
-
-
-        this.getContentPane().add(BorderLayout.CENTER, main);
+        this.getContentPane().add(tabbedPane);
     }
 
     public static void main(String[] args) {
         try {
-
 
             ConnectedFrames frames = new ConnectedFrames();
             frames.setDefaultCloseOperation(EXIT_ON_CLOSE);
