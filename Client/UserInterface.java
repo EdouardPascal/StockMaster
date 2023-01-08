@@ -9,6 +9,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.rmi.Naming;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 
 public class UserInterface {
@@ -98,6 +101,33 @@ public class UserInterface {
         Client.UserInterface user = new Client.UserInterface();
         user.go();
     }
+
+    public void connect(String Username, String Password) {
+
+        Connection conn = null;
+        try {
+            // db parameters
+            String port = ;
+            String directory = "localhost";
+            String url = "jdbc:sqlite:C:/sqlite/JTP.db";
+            // create a connection to the database
+            conn = DriverManager.getConnection(url);
+
+            System.out.println("Connection to SQLite has been established.");
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
+    }
+}
 
 }
 
