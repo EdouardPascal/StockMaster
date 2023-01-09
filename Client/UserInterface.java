@@ -1,17 +1,14 @@
 package Client;
 
 
-import Server.MyRemote;
 import Server.UserAccount;
+import com.formdev.flatlaf.FlatLightLaf;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.rmi.Naming;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 
 
 public class UserInterface {
@@ -35,10 +32,12 @@ public class UserInterface {
 
     //  JTextField usernameField;
     //  JPasswordField passwordField;
+    JButton login = new JButton("Login");
 
     public void go() {
-        log_page = new LogFrames("StockTeacher");
-        JButton login = new JButton("Login");
+        log_page = new LogFrames("Login Page");
+        log_page.setIconImage((new ImageIcon("icon/stock-market.png")).getImage());
+        log_page.setTitle("StockMaster");
         login.addActionListener(new LoginListener());
         // login.setSize(100, 100);
         JButton create_account = new JButton("Create a new Account");
@@ -65,8 +64,11 @@ public class UserInterface {
         log_page.getContentPane().requestFocusInWindow();
 
         /////////////////////////////////////////////////////////////////////////////////////////////
+        ///login.requestFocusInWindow();
+
 
         log_page.setVisible(true);
+
 
     }
 
@@ -77,14 +79,7 @@ public class UserInterface {
             System.out.println("Tried to login");
             System.out.println("Username is " + userInput);
             System.out.println("Password is " + passInput);
-            try {
-                Server.MyRemote service = (MyRemote) Naming.lookup("rmi://localhost:1500/Connection");
-                String message = service.connect(userInput, passInput);
-                service.saveAccount(userAccount);
-                System.out.println(message);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            connect(userInput, passInput);
         }
     }
 
@@ -98,14 +93,24 @@ public class UserInterface {
     }
 
     public static void main(String[] args) {
+        try {
+            UIManager.setLookAndFeel(new FlatLightLaf());
+            UIManager.put("TabbedPane.selectedBackground", Color.blue);
+            UIManager.put("TabbedPane.showTabSeparators", true);
+            UIManager.put("TabbedPane.tabSeparatorsFullHeight", true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
         Client.UserInterface user = new Client.UserInterface();
-        //user.go();
-        user.connect("pascal", "edouard");
+        user.go();
+
     }
 
     public void connect(String Username, String Password) {
+//Connect to SQL database
 
-        Connection conn = null;
+        Connection connection = null;
         try {
             // db parameters
             String port = "3306";
@@ -115,22 +120,40 @@ public class UserInterface {
             String database_username = "root";
             String database_password = "stockmaster1";
             // create a connection to the database
-            conn = DriverManager.getConnection(url, database_username, database_password);
+            connection = DriverManager.getConnection(url, database_username, database_password);
 
             System.out.println("Connection to SQLite has been established.");
+            /////////look into the table userpass for matching username and password
+            PreparedStatement preparedStatement = (PreparedStatement)
+                    connection.prepareStatement("SELECT Username, Password FROM userpass where Username=? and Password=?");
+            preparedStatement.setString(1, Username);
+            preparedStatement.setString(2, Password);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+
+                //UserHome ah = new UserHome(userName);
+                //ah.setTitle("Welcome");
+                //ah.setVisible(true);
+                JOptionPane.showMessageDialog(login, "You have successfully logged in");
+            } else {
+                System.out.println("Wrong Username & Password");
+                JOptionPane.showMessageDialog(login, "Wrong Username & Password");
+            }
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         } finally {
             try {
-                if (conn != null) {
-                    conn.close();
+                if (connection != null) {
+                    connection.close();
                 }
             } catch (SQLException ex) {
                 System.out.println(ex.getMessage());
             }
         }
     }
+
+
 }
 
 

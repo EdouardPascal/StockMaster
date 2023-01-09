@@ -15,6 +15,7 @@ public class LogFrames extends JFrame {
 
     public LogFrames(String message) {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
         welcome = new JPanel();
         welcome_msg = new JLabel(message);
         logpanel = new JPanel();
@@ -39,6 +40,7 @@ public class LogFrames extends JFrame {
         usernameField.setBorder(BorderFactory.createLineBorder(Color.black));
         passwordField = new JPasswordField("PASSWORD");
         passwordField.setBorder(BorderFactory.createLineBorder(Color.black));
+
         usernameField.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
@@ -74,6 +76,8 @@ public class LogFrames extends JFrame {
         info.add(usernameField);
         info.add(passwordField);
 
+
     }
+
 }
 
