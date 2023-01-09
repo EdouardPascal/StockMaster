@@ -14,5 +14,6 @@
     <orderEntry type="library" exported="" name="jsoup" level="project" />
     <orderEntry type="library" exported="" name="formdev.flatlaf" level="project" />
     <orderEntry type="library" exported="" name="microsoft.sqlserver.mssql.jdbc" level="project" />
+    <orderEntry type="library" exported="" name="mysql.connector.j" level="project" />
   </component>
 </module>

@@ -99,7 +99,8 @@ public class UserInterface {
 
     public static void main(String[] args) {
         Client.UserInterface user = new Client.UserInterface();
-        user.go();
+        //user.go();
+        user.connect("pascal", "edouard");
     }
 
     public void connect(String Username, String Password) {
@@ -107,11 +108,14 @@ public class UserInterface {
         Connection conn = null;
         try {
             // db parameters
-            String port = ;
+            String port = "3306";
             String directory = "localhost";
-            String url = "jdbc:sqlite:C:/sqlite/JTP.db";
+            String database_name = "stockmaster";
+            String url = "jdbc:mysql://" + directory + ":" + port + "/" + database_name;
+            String database_username = "root";
+            String database_password = "stockmaster1";
             // create a connection to the database
-            conn = DriverManager.getConnection(url);
+            conn = DriverManager.getConnection(url, database_username, database_password);
 
             System.out.println("Connection to SQLite has been established.");
 
@@ -129,7 +133,7 @@ public class UserInterface {
     }
 }
 
-}
+
 
 
 
