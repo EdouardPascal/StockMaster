@@ -23,14 +23,39 @@ public class LogFrames extends JFrame {
 
     public LogFrames(String message) {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        ImageIcon login_image = new ImageIcon("icon/welcome.jpg");
-        //login_image.setImage(login_image.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH));
-        westPanel.setSize(100, 250);
+
+
+        //setting the west panel and adding image
+        ImageIcon login_image = new ImageIcon("icon/stockmarketlarge.png");
+        //login_image.setImage(login_image.getImage().getScaledInstance(250, 250, Image.SCALE_DEFAULT));
+
+        JPanel titlePanel = new JPanel();
+
+        westPanel.setMinimumSize(new Dimension(300, 250));
         // westPanel.add(new JLabel(login_image));
-        westPanel.setBackground(Color.CYAN);
+        westPanel.setBackground(Color.WHITE);
+        JLabel westLabel = new JLabel("StockMaster");
+        westLabel.setFont(UIManager.getFont("h1.font"));
+
+        westLabel.setVerticalTextPosition(SwingConstants.TOP);
+        westLabel.setHorizontalTextPosition(SwingConstants.CENTER);
+        westLabel.setVerticalAlignment(SwingConstants.TOP);
+        westLabel.setIcon(login_image);
+        titlePanel.setBackground(Color.WHITE);
+        titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
+        titlePanel.add(westLabel);
+
+        //titlePanel.add(new JLabel(login_image));
+
+        //JPanel spacer=new JPanel();
+        //spacer.setBackground(B);
+        titlePanel.setBorder(BorderFactory.createEmptyBorder(100, 50, 250, 100));
+        westPanel.add(titlePanel, BorderLayout.CENTER);
+        /////////
         this.setSize(700, 600);
         welcome = new JPanel();
         welcome_msg = new JLabel(message);
+
         logpanel = new JPanel();
         logpanel.setLayout(new
 
