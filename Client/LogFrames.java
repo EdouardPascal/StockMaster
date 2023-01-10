@@ -13,9 +13,22 @@ public class LogFrames extends JFrame {
     JTextField usernameField;
     JPasswordField passwordField;
 
+    JPanel usernamePanel = new JPanel();
+    JPanel passwordPanel = new JPanel();
+    JLabel usernameLabel = new JLabel("Username");
+    JLabel passwordLabel = new JLabel("Password");
+
+    JPanel westPanel = new JPanel();
+
+
     public LogFrames(String message) {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+        ImageIcon login_image = new ImageIcon("icon/welcome.jpg");
+        //login_image.setImage(login_image.getImage().getScaledInstance(250, 250, Image.SCALE_SMOOTH));
+        westPanel.setSize(100, 250);
+        // westPanel.add(new JLabel(login_image));
+        westPanel.setBackground(Color.CYAN);
+        this.setSize(700, 600);
         welcome = new JPanel();
         welcome_msg = new JLabel(message);
         logpanel = new JPanel();
@@ -34,12 +47,17 @@ public class LogFrames extends JFrame {
 
 
         usernameField = new JTextField("USERNAME");
-        usernameField.setBounds(100, 20, 165, 25);
-
+        // usernameField.setBounds(100, 20, 165, 25);
+        usernamePanel.add(BorderLayout.WEST, usernameLabel);
+        usernamePanel.add(BorderLayout.CENTER, usernameField);
+        passwordPanel.add(BorderLayout.WEST, passwordLabel);
 
         usernameField.setBorder(BorderFactory.createLineBorder(Color.black));
         passwordField = new JPasswordField("PASSWORD");
         passwordField.setBorder(BorderFactory.createLineBorder(Color.black));
+
+        passwordPanel.add(BorderLayout.CENTER, passwordField);
+
 
         usernameField.addFocusListener(new FocusListener() {
             @Override
@@ -73,10 +91,12 @@ public class LogFrames extends JFrame {
             }
         });
 //////////////////////////////////////////////////////////////////////////////////////////
-        info.add(usernameField);
-        info.add(passwordField);
+        info.add(welcome_msg);
+        info.add(usernamePanel);
+        info.add(passwordPanel);
+        info.add(logpanel);
 
-
+        this.getContentPane().add(BorderLayout.WEST, westPanel);
     }
 
 }

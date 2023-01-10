@@ -44,18 +44,14 @@ public class UserInterface {
         create_account.addActionListener(new CreateAccountListener());
         //create_account.setPreferredSize((new Dimension(300, 50)));
 
-        log_page.welcome.add(log_page.welcome_msg);
+
         log_page.logpanel.add(login);
         log_page.logpanel.add(create_account);
 
 
-        log_page.setSize(300, 300);
-        log_page.getContentPane().
+        //log_page.setSize(300, 300);
 
-                add(BorderLayout.SOUTH, log_page.logpanel);
-        log_page.getContentPane().
 
-                add(BorderLayout.NORTH, log_page.welcome);
         log_page.getContentPane().
 
                 add(BorderLayout.CENTER, log_page.info);
