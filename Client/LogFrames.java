@@ -1,6 +1,7 @@
 package Client;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -31,7 +32,7 @@ public class LogFrames extends JFrame {
 
         JPanel titlePanel = new JPanel();
 
-        westPanel.setMinimumSize(new Dimension(300, 250));
+        westPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 100, 100));
         // westPanel.add(new JLabel(login_image));
         westPanel.setBackground(Color.WHITE);
         JLabel westLabel = new JLabel("StockMaster");
@@ -49,39 +50,52 @@ public class LogFrames extends JFrame {
 
         //JPanel spacer=new JPanel();
         //spacer.setBackground(B);
-        titlePanel.setBorder(BorderFactory.createEmptyBorder(100, 50, 250, 100));
+        titlePanel.setBorder(BorderFactory.createEmptyBorder(50, 20, 0, 0));
         westPanel.add(titlePanel, BorderLayout.CENTER);
         /////////
-        this.setSize(700, 600);
+        ;
         welcome = new JPanel();
         welcome_msg = new JLabel(message);
+        welcome_msg.setFont(UIManager.getFont("h00.font"));
+        welcome_msg.setForeground(new Color(76, 255, 71));
+        //welcome.setBounds(100, 100, 100, 0);
 
         logpanel = new JPanel();
         logpanel.setLayout(new
 
-                BoxLayout(logpanel, BoxLayout.Y_AXIS));
+                BoxLayout(logpanel, BoxLayout.X_AXIS));
+        //logpanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 100, 100));
 
         info = new JPanel();
-        info.setLayout(new
+        info.setLayout(new BorderLayout());
 
-                BoxLayout(info, BoxLayout.Y_AXIS));
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
+        //     BoxLayout(info, BoxLayout.Y_AXIS));
+        //////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////
 
 
         usernameField = new JTextField("USERNAME");
-        // usernameField.setBounds(100, 20, 165, 25);
+        usernameField.setOpaque(false);
+        usernameField.setBorder(new EmptyBorder(0, 0, 15, 0));
+
+        usernameField.setColumns(10);
+        //usernameField.setBounds(300, 0, 165, 25);
+/*
+
         usernamePanel.add(BorderLayout.WEST, usernameLabel);
         usernamePanel.add(BorderLayout.CENTER, usernameField);
         passwordPanel.add(BorderLayout.WEST, passwordLabel);
 
+*/
         usernameField.setBorder(BorderFactory.createLineBorder(Color.black));
+
         passwordField = new JPasswordField("PASSWORD");
+        passwordField.setColumns(10);
         passwordField.setBorder(BorderFactory.createLineBorder(Color.black));
 
-        passwordPanel.add(BorderLayout.CENTER, passwordField);
+        //passwordPanel.add(BorderLayout.CENTER, passwordField);
 
 
         usernameField.addFocusListener(new FocusListener() {
@@ -115,13 +129,26 @@ public class LogFrames extends JFrame {
                 }
             }
         });
-//////////////////////////////////////////////////////////////////////////////////////////
-        info.add(welcome_msg);
-        info.add(usernamePanel);
-        info.add(passwordPanel);
-        info.add(logpanel);
+
+
+        //logpanel.setOpaque(false);
+        //////////////////////////////////////////////////////////////////////////////////////////
+        info.add(welcome_msg, BorderLayout.NORTH);
+
+        JPanel userField = new JPanel();
+        userField.setLayout(new BoxLayout(userField, BoxLayout.Y_AXIS));
+
+        userField.add(usernameField);
+        userField.add(passwordField);
+
+        info.add(userField);
+        info.add(logpanel, BorderLayout.SOUTH);
+        // info.setBorder(BorderFactory.createEmptyBorder(westPanel.getWidth(), westPanel.getWidth(), 850, 300));
+
 
         this.getContentPane().add(BorderLayout.WEST, westPanel);
+        this.getContentPane().add(BorderLayout.CENTER, info);
+        this.pack();
     }
 
 }

@@ -39,9 +39,20 @@ public class UserInterface {
         log_page.setIconImage((new ImageIcon("icon/stock-market.png")).getImage());
         log_page.setTitle("StockMaster");
         login.addActionListener(new LoginListener());
-        // login.setSize(100, 100);
+        login.setBackground(new Color(76, 255, 71));
+        login.setForeground(Color.WHITE);
+        //login.setBorder(BorderFactory.createEmptyBorder(0, 0, 30, 150));
+
+
+        login.setHorizontalAlignment(SwingConstants.LEFT);
         JButton create_account = new JButton("Create a new Account");
+        create_account.setBackground(new Color(76, 255, 71));
+
+        create_account.setForeground(Color.WHITE);
         create_account.addActionListener(new CreateAccountListener());
+        //login.setBorder(BorderFactory.createEmptyBorder(0, 0, 30, 150));
+        // create_account.setBorder(BorderFactory.createEmptyBorder(0, 30, 30, 150));
+
         //create_account.setPreferredSize((new Dimension(300, 50)));
 
 
@@ -52,9 +63,9 @@ public class UserInterface {
         //log_page.setSize(300, 300);
 
 
-        log_page.getContentPane().
+        // log_page.getContentPane().
 
-                add(BorderLayout.CENTER, log_page.info);
+        //     add(BorderLayout.EAST, log_page.info);
 
         log_page.setBackground(Color.BLACK);
         log_page.getContentPane().requestFocusInWindow();
@@ -63,6 +74,7 @@ public class UserInterface {
         ///login.requestFocusInWindow();
 
 
+        log_page.pack();
         log_page.setVisible(true);
 
 
