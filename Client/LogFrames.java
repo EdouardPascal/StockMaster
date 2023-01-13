@@ -67,7 +67,8 @@ public class LogFrames extends JFrame {
         //logpanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 100, 100));
 
         info = new JPanel();
-        info.setLayout(new BorderLayout());
+        info.setLayout(new BorderLayout(0, 10));
+        info.setBorder(new EmptyBorder(0, 0, 50, 150));
 
         //     BoxLayout(info, BoxLayout.Y_AXIS));
         //////////////////////////////////////////////////////////////////////////
@@ -78,7 +79,7 @@ public class LogFrames extends JFrame {
 
         usernameField = new JTextField("USERNAME");
         usernameField.setOpaque(false);
-        usernameField.setBorder(new EmptyBorder(0, 0, 15, 0));
+        usernameField.setBorder(new EmptyBorder(0, 0, 10, 10));
 
         usernameField.setColumns(10);
         //usernameField.setBounds(300, 0, 165, 25);
@@ -138,10 +139,13 @@ public class LogFrames extends JFrame {
         JPanel userField = new JPanel();
         userField.setLayout(new BoxLayout(userField, BoxLayout.Y_AXIS));
 
+
         userField.add(usernameField);
+        userField.add(Box.createRigidArea(new Dimension(0, 10)));
         userField.add(passwordField);
 
         info.add(userField);
+
         info.add(logpanel, BorderLayout.SOUTH);
         // info.setBorder(BorderFactory.createEmptyBorder(westPanel.getWidth(), westPanel.getWidth(), 850, 300));
 

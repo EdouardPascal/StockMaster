@@ -32,7 +32,7 @@ public class UserInterface {
 
     //  JTextField usernameField;
     //  JPasswordField passwordField;
-    JButton login = new JButton("Login");
+    JButton login = new JButton("Login", JButton.CENTER);
 
     public void go() {
         log_page = new LogFrames("Login Page");
@@ -44,19 +44,21 @@ public class UserInterface {
         //login.setBorder(BorderFactory.createEmptyBorder(0, 0, 30, 150));
 
 
-        login.setHorizontalAlignment(SwingConstants.LEFT);
+        // login.setVerticalTextPosition(SwingConstants.CENTER);
         JButton create_account = new JButton("Create a new Account");
         create_account.setBackground(new Color(76, 255, 71));
 
         create_account.setForeground(Color.WHITE);
         create_account.addActionListener(new CreateAccountListener());
-        //login.setBorder(BorderFactory.createEmptyBorder(0, 0, 30, 150));
-        // create_account.setBorder(BorderFactory.createEmptyBorder(0, 30, 30, 150));
+        login.setBorder(BorderFactory.createEmptyBorder(0, 0, 30, 150));
+        create_account.setBorder(BorderFactory.createEmptyBorder(0, 30, 30, 150));
 
         //create_account.setPreferredSize((new Dimension(300, 50)));
 
 
         log_page.logpanel.add(login);
+        log_page.logpanel.add(Box.createRigidArea(new Dimension(10, 0)));
+
         log_page.logpanel.add(create_account);
 
 
