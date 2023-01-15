@@ -93,13 +93,12 @@ public class LogFrames extends JFrame {
 
 
         //configure login and create account buttons
-        login.addActionListener(new UserInterface.LoginListener());
+
         login.setBackground(new Color(76, 255, 71));
         login.setForeground(Color.WHITE);
         login.setMargin(new Insets(30, 30, 30, 25));
 
 
-        create_account.addActionListener(new UserInterface.CreateAccountListener());
         create_account.setBackground(new Color(76, 255, 71));
         create_account.setForeground(Color.WHITE);
         login.setBorder(BorderFactory.createEmptyBorder(0, 0, 30, 150));
@@ -162,7 +161,7 @@ public class LogFrames extends JFrame {
 
 
         this.getContentPane().add(BorderLayout.WEST, westPanel);
-        this.getContentPane().add(BorderLayout.CENTER, info);
+        this.getContentPane().add(BorderLayout.CENTER, eastPanel);
         this.pack();
     }
 

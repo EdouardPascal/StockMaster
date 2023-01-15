@@ -4,6 +4,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.Serializable;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,12 +20,14 @@ public class UserAccount implements Serializable {
     //using hashmap as data structure and using the name of the stock has a key
 
     //constructor
-    public UserAccount(String user) {
-        this.money_available = initial;
+    public UserAccount(String username, String password) {
+        this.username = username;
+        this.password = password;
+
+        this.money_available = getMoney_available();
         this.total_money = initial;
         this.money_invested = 0;
         this.list_stock = new HashMap<String, Double>();
-        this.username = user;
 
 
     }
@@ -40,6 +43,49 @@ public class UserAccount implements Serializable {
     }
 
     public double getMoney_available() {
+        Connection connection = null;
+        try {
+            // db parameters
+            String port = "3306";
+            String directory = "localhost";
+            String database_name = "stockmaster";
+            String url = "jdbc:mysql://" + directory + ":" + port + "/" + database_name;
+            String database_username = "root";
+            String database_password = "stockmaster1";
+            // create a connection to the database
+            connection = DriverManager.getConnection(url, database_username, database_password);
+
+            System.out.println("Connection to SQLite has been established.");
+            /////////look into the table userpass for matching username and password
+            PreparedStatement preparedStatement = (PreparedStatement)
+                    connection.prepareStatement("SELECT* FROM userpass where username=? and password=?");
+            preparedStatement.setString(1, this.username);
+            preparedStatement.setString(2, this.password);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                this.money_available = resultSet.getDouble("money_available");
+                System.out.println(this.money_available);
+                return this.money_available;
+
+            } else {
+                System.out.println("Wrong Username & Password");
+                //  JOptionPane.showMessageDialog(new JButton(), "Wrong Username & Password");
+                return 0.0;
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
+
+
         return money_available;
     }
 
