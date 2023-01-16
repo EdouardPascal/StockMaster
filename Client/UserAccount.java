@@ -10,6 +10,16 @@ import java.util.Map;
 
 
 public class UserAccount implements Serializable {
+
+
+    String port = "3306";
+    String directory = "localhost";
+    String database_name = "stockmaster";
+    String url = "jdbc:mysql://" + directory + ":" + port + "/" + database_name;
+    String database_username = "root";
+    String database_password = "stockmaster1";
+
+
     final double initial = 0;
     private String username;
     private String password;
@@ -25,8 +35,15 @@ public class UserAccount implements Serializable {
         this.password = password;
 
         this.money_available = getMoney_available();
-        this.total_money = initial;
-        this.money_invested = 0;
+
+        try {
+
+            this.money_invested = getMoney_invested();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        this.total_money = this.money_available + this.money_invested;
+
         this.list_stock = new HashMap<String, Double>();
 
 
@@ -46,12 +63,6 @@ public class UserAccount implements Serializable {
         Connection connection = null;
         try {
             // db parameters
-            String port = "3306";
-            String directory = "localhost";
-            String database_name = "stockmaster";
-            String url = "jdbc:mysql://" + directory + ":" + port + "/" + database_name;
-            String database_username = "root";
-            String database_password = "stockmaster1";
             // create a connection to the database
             connection = DriverManager.getConnection(url, database_username, database_password);
 
@@ -89,18 +100,54 @@ public class UserAccount implements Serializable {
         return money_available;
     }
 
-    public double getMoney_invested() {
+    public double getMoney_invested() throws Exception {
+        Connection connection = null;
         try {
-            refresh_money_invested();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            // db parameters
+
+            // create a connection to the database
+            connection = DriverManager.getConnection(url, database_username, database_password);
+
+            System.out.println("Connection to SQLite has been established.");
+            /////////look into the table userpass for matching username and password
+            PreparedStatement preparedStatement = (PreparedStatement)
+                    connection.prepareStatement("SELECT* FROM stock_owner where username=?");
+            preparedStatement.setString(1, this.username);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            double money = 0.0;
+            String stock_code;
+            double quantity = 0.0;
+            while (resultSet.next()) {
+                stock_code = resultSet.getString("stock_code");
+                quantity = resultSet.getDouble("quantity");
+                money += real_time_price(stock_code) * quantity;
+                System.out.println("Added " + quantity + " of stock " + stock_code);
+
+                System.out.println("Total invested: " + money);
+
+            }
+            this.money_available = money;
+            return money_available;
+
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
         }
         return money_invested;
-
     }
 
 
-    public double getTotal_money() {
+    public double getTotal_money() throws Exception {
+        this.total_money = getMoney_available() + getMoney_invested();
+
         return total_money;
     }
 
@@ -142,7 +189,8 @@ public class UserAccount implements Serializable {
     }
 
     /////////
-    public double real_time_price(String stock_code) throws Exception //get the real time price of stock using its code
+    public double real_time_price(String stock_code) throws
+            Exception //get the real time price of stock using its code
     {
         String url = "https://www.google.com/finance/quote/" + stock_code + ":NASDAQ?hl=en";//build url using stock code
         String texts;
@@ -156,13 +204,14 @@ public class UserAccount implements Serializable {
         int from = texts.indexOf(">", start);
         int stop = texts.indexOf("</div", from);
 
-        String price = texts.substring(from + 1, stop);
+        String price = texts.substring(from + 1, stop).replace("$", "").replace(",", "");
         return (Double.parseDouble(price)); //transform the string price into double and return it
 
 
     }
 
-    public void buy_stock(String stock_code, double amount_money)//take the stock code and the amount of money invested and perform the buying
+    public void buy_stock(String stock_code,
+                          double amount_money)//take the stock code and the amount of money invested and perform the buying
     {
         try {
             double quantity_bought = amount_money / real_time_price(stock_code); //calculate quantity brought at the time
