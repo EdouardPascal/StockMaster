@@ -45,6 +45,7 @@ public class UserAccount implements Serializable {
         this.total_money = this.money_available + this.money_invested;
 
         this.list_stock = new HashMap<String, Double>();
+        this.list_stock = getList_stock();
 
 
     }
@@ -59,7 +60,7 @@ public class UserAccount implements Serializable {
         return username;
     }
 
-    public double getMoney_available() {
+    public double getMoney_available() { //connect to SQL database and return the total amount of money available
         Connection connection = null;
         try {
             // db parameters
@@ -72,6 +73,8 @@ public class UserAccount implements Serializable {
                     connection.prepareStatement("SELECT* FROM userpass where username=? and password=?");
             preparedStatement.setString(1, this.username);
             preparedStatement.setString(2, this.password);
+            //configure the statement for correct Account lookup
+
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 this.money_available = resultSet.getDouble("money_available");
@@ -101,6 +104,8 @@ public class UserAccount implements Serializable {
     }
 
     public double getMoney_invested() throws Exception {
+        //look the SQL database to find the stock and the amount owned and multiply it by the real time price to find
+        //amount invested
         Connection connection = null;
         try {
             // db parameters
@@ -151,6 +156,45 @@ public class UserAccount implements Serializable {
         return total_money;
     }
 
+    public HashMap<String, Double> getList_stock() {
+        Connection connection = null;
+        try {
+            connection = DriverManager.getConnection(url, database_username, database_password);
+            System.out.println("Connection to SQLite has been established.");
+            PreparedStatement statement;
+            ResultSet resultSet;
+            String query = "SELECT* FROM stock_owner where username=?";
+            statement = (PreparedStatement) connection.prepareStatement(query);
+            statement.setString(1, this.username);
+            resultSet = statement.executeQuery();
+
+            String code;
+            Double quantity;
+            while (resultSet.next()) {
+                code = resultSet.getString("stock_code");
+                quantity = resultSet.getDouble("quantity");
+                list_stock.put(code, quantity);
+                System.out.println("Added " + quantity + "of stock: " + code + " to the list ");
+
+
+            }
+            System.out.println(list_stock);
+            return list_stock;
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
+
+        return list_stock;
+    }
 
     ///////////////////////////
 
@@ -210,11 +254,42 @@ public class UserAccount implements Serializable {
 
     }
 
+
     public void buy_stock(String stock_code,
                           double amount_money)//take the stock code and the amount of money invested and perform the buying
     {
+        if (amount_money > getMoney_available()) {//if not enough money
+            System.out.println("Not enough money to perform this acquisition");
+            return;
+        }
+        Connection connection = null;
         try {
             double quantity_bought = amount_money / real_time_price(stock_code); //calculate quantity brought at the time
+
+            connection = DriverManager.getConnection(url, database_username, database_password);
+            System.out.println("Succesfully connected to SQL server");
+            String query = "SELECT* FROM stock_owner where username=? AND stock_code=?";
+
+            PreparedStatement preparedStatement = (PreparedStatement) connection.prepareStatement(query);
+            preparedStatement.setString(1, this.username);
+            preparedStatement.setString(2, stock_code);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                double amount_owned = resultSet.getDouble("quantity");
+                double new_quantity = quantity_bought + amount_owned;
+                query = "UPDATE stock_owner SET quantity=? WHERE stock_code=? and username=?";
+                preparedStatement = (PreparedStatement) connection.prepareStatement(query);
+                preparedStatement.setDouble(1, new_quantity);
+                preparedStatement.setString(2, stock_code);
+                preparedStatement.setString(3, this.username);
+
+                preparedStatement.executeQuery();
+            } else {
+                query = "INSERT INTO"
+            }
+
 
             if (list_stock.containsKey(stock_code)) { //if we already have that stock we just update its value in the list
                 double new_quantity = list_stock.get(stock_code) + quantity_bought;
