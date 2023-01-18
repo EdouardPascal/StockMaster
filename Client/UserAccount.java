@@ -50,6 +50,32 @@ public class UserAccount implements Serializable {
 
     }
 
+    //mutators
+    public void setMoney_available(double amount) {
+        Connection connection = null;
+        try {
+            connection = DriverManager.getConnection(url, database_username, database_password);
+            String query = "UPDATE userpass SET money_available=? WHERE username=?";
+            PreparedStatement preparedStatement = (PreparedStatement) connection.prepareStatement(query);
+            preparedStatement.setDouble(1, amount);
+            preparedStatement.setString(2, this.username);
+
+            preparedStatement.executeQuery();
+
+
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+            } catch (Exception exception) {
+                System.out.println(exception.getMessage());
+            }
+        }
+    }
+
 
     //we will create accessor and  mutators
     public String getPassword() {
@@ -276,7 +302,7 @@ public class UserAccount implements Serializable {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            if (resultSet.next()) {
+            if (resultSet.next()) {//if user already had that stock we just update the quantity
                 double amount_owned = resultSet.getDouble("quantity");
                 double new_quantity = quantity_bought + amount_owned;
                 query = "UPDATE stock_owner SET quantity=? WHERE stock_code=? and username=?";
@@ -287,18 +313,15 @@ public class UserAccount implements Serializable {
 
                 preparedStatement.executeQuery();
             } else {
-                query = "INSERT INTO"
+                query = "INSERT INTO stock_owner(stock_code,username,quantity) VALUES(?,?,?)";
+                preparedStatement = (PreparedStatement) connection.prepareStatement(query);
+                preparedStatement.setString(1, stock_code);
+                preparedStatement.setString(2, this.username);
+                preparedStatement.setDouble(3, quantity_bought);
+
+                preparedStatement.executeQuery();
+
             }
-
-
-            if (list_stock.containsKey(stock_code)) { //if we already have that stock we just update its value in the list
-                double new_quantity = list_stock.get(stock_code) + quantity_bought;
-                list_stock.replace(stock_code, new_quantity);
-
-            } else {
-                list_stock.put(stock_code, quantity_bought);
-            }
-            this.setMoney_available(getMoney_available() - amount_money);//update money invested and all
 
 
         } catch (Exception ex) {
