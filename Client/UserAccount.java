@@ -6,7 +6,6 @@ import org.jsoup.nodes.Document;
 import java.io.Serializable;
 import java.sql.*;
 import java.util.HashMap;
-import java.util.Map;
 
 
 public class UserAccount implements Serializable {
@@ -20,7 +19,6 @@ public class UserAccount implements Serializable {
     String database_password = "stockmaster1";
 
 
-    final double initial = 0;
     private String username;
     private String password;
     private double total_money;
@@ -44,14 +42,16 @@ public class UserAccount implements Serializable {
         }
         this.total_money = this.money_available + this.money_invested;
 
-        this.list_stock = new HashMap<String, Double>();
+        this.list_stock = new HashMap<>();
         this.list_stock = getList_stock();
 
 
     }
+//reapeated functions that are useful
 
     //mutators
     public void setMoney_available(double amount) {
+        //connect to sql database and update the money_available column from userpass table
         Connection connection = null;
         try {
             connection = DriverManager.getConnection(url, database_username, database_password);
@@ -147,7 +147,7 @@ public class UserAccount implements Serializable {
             ResultSet resultSet = preparedStatement.executeQuery();
             double money = 0.0;
             String stock_code;
-            double quantity = 0.0;
+            double quantity;
             while (resultSet.next()) {
                 stock_code = resultSet.getString("stock_code");
                 quantity = resultSet.getDouble("quantity");
@@ -195,7 +195,7 @@ public class UserAccount implements Serializable {
             resultSet = statement.executeQuery();
 
             String code;
-            Double quantity;
+            double quantity;
             while (resultSet.next()) {
                 code = resultSet.getString("stock_code");
                 quantity = resultSet.getDouble("quantity");
@@ -223,27 +223,6 @@ public class UserAccount implements Serializable {
     }
 
     ///////////////////////////
-
-
-    public void setMoney_available(double money_available) {
-        this.money_available = money_available;
-    }
-
-    public void refresh_money_invested() throws Exception {
-
-        try {
-            double invested_money = 0;
-            for (Map.Entry<String, Double> entry : list_stock.entrySet()) {
-
-                String key = entry.getKey();
-                Double value = entry.getValue();
-                invested_money += real_time_price(key) * value;
-            }
-            this.money_invested = invested_money;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
 
 
     public void setPassword(String password) {
@@ -282,13 +261,15 @@ public class UserAccount implements Serializable {
 
 
     public void buy_stock(String stock_code,
-                          double amount_money)//take the stock code and the amount of money invested and perform the buying
+                          double amount_money)
+    //take the stock code and the amount of money invested and perform the buying
+    //by connecting to database and modifiying quantity column from stock_owner table and also list_stock object
     {
         if (amount_money > getMoney_available()) {//if not enough money
             System.out.println("Not enough money to perform this acquisition");
             return;
         }
-        Connection connection = null;
+        Connection connection;
         try {
             double quantity_bought = amount_money / real_time_price(stock_code); //calculate quantity brought at the time
 
@@ -327,8 +308,68 @@ public class UserAccount implements Serializable {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+        //after performing the purchase set the corect amount of money by substracting the amount
+        //previously available with the amount purchased
+
+        setMoney_available(getMoney_available() - amount_money);
 
 
     }
+
+    public void sell_stock(String stock_code, double amount_money) throws Exception {
+
+
+        //first acknowledge bad cases
+        if (!list_stock.containsKey(stock_code)) {
+            System.out.println("You do not own that stock");
+            return;
+        }
+        double price = real_time_price(stock_code);
+        double quantity = amount_money / price;
+
+        if (quantity > list_stock.get(stock_code)) {
+            System.out.println("You do not own that many stock");
+            return;
+
+        }
+
+        Double new_quantity = list_stock.get(stock_code) - quantity;
+        list_stock.put(stock_code, new_quantity);
+        setStockQuantity(stock_code, new_quantity);
+
+    }
+
+    public void setStockQuantity(String stock_code, Double new_quantity) {
+        //using the stock_code and the new quantity, connect to database and
+        //modify the value of the quantity owned by user for that specific stock
+        Connection connection = null;
+        try {
+            connection = DriverManager.getConnection(url, database_username, database_password);
+            System.out.println("Succesfully connected to SQL server");
+            String query = "UPDATE stock_owner SET quantity=? where stock_code=? and username=? ";
+            PreparedStatement preparedStatement = (PreparedStatement) connection.prepareStatement(query);
+
+            preparedStatement.setDouble(1, new_quantity);
+            preparedStatement.setString(2, stock_code);
+            preparedStatement.setString(3, this.username);
+
+            preparedStatement.executeQuery();
+
+
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        } finally {
+            try {
+                if (connection != null) {
+                    connection.close();
+                }
+
+            } catch (Exception exception) {
+                System.out.println(exception.getMessage());
+            }
+        }
+    }
+
+
 }
 
