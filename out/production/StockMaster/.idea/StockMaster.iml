@@ -9,7 +9,7 @@
       <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
-    <orderEntry type="library" exported="" name="tech.tablesaw.aggregate" level="project" />
+    <orderEntry type="library" name="tech.tablesaw.aggregate" level="project" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="jsoup" level="project" />
     <orderEntry type="library" exported="" name="formdev.flatlaf" level="project" />

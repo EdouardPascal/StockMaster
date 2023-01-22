@@ -22,6 +22,9 @@ public class ConnectedFrames extends JFrame {
     JTabbedPane tabbedPane;
 
     public ConnectedFrames(UserAccount account) throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+        //functions to look for historical data
+
+
         //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         UIManager.setLookAndFeel(new FlatLightLaf());
         //UIManager.put("TabbedPane.selectedBackground", Color.green);
@@ -186,7 +189,7 @@ public class ConnectedFrames extends JFrame {
                     stock_panel.setBackground(Color.lightGray);
                     stock_panel.setForeground(Color.WHITE);
                     stock_panel.setBorder(border);
-                    
+
                     JLabel code = new JLabel(stock_code);
                     code.setFont(UIManager.getFont("h3.font"));
                     code.setForeground(Color.black);
@@ -233,6 +236,8 @@ public class ConnectedFrames extends JFrame {
     }
 
     public static void main(String[] args) {
+
+
         try {
 
             ConnectedFrames frames = new ConnectedFrames(new UserAccount("pascal", "edouard"));
@@ -243,5 +248,8 @@ public class ConnectedFrames extends JFrame {
             ex.printStackTrace();
         }
 
+
     }
+
+    
 }
