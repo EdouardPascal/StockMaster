@@ -8,8 +8,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class ReadCSV {
+    //csv has data in chronological order
+
     public static void main(String[] args) {
         ReadCSV readCSV = new ReadCSV();
         try {
@@ -20,23 +24,43 @@ public class ReadCSV {
     }
 
     public void get_historical_data(String stock_code) throws IOException {
+        //using the stock code as a parameter look for historical data
         String url = "https://finance.yahoo.com/quote/" + stock_code + "/history?p=" + stock_code;
         Document page = Jsoup.connect(url).get();
 
-        Element link = page.selectFirst("a[class='Fl(end) Mt(3px) Cur(p)']");
-        String fileLink = link.attr("href");
-        System.out.println(fileLink);
+        Element link = page.selectFirst("a[class='Fl(end) Mt(3px) Cur(p)']"); //search for download link
+        String downloadLink = link.attr("href");//download link
+
+        //the csv file will have the data in chronological order
+
+        //date formatter
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        //create 2 arrays of size 365 since it will be the maximum amount of points in one year
+        Date[] dates = new Date[365];
+        double[] closing_prices = new double[365];
 
         try {
+//open link and read csv file
+            BufferedReader in = new BufferedReader(new InputStreamReader(new URL(downloadLink).openStream()));
+            String line = in.readLine();//we dont need the first line
+            int counter = 0;//to keep track of what line we are
+            String[] information;
+            //index 0 has the date and index 4 has the closing price
+            while ((line = in.readLine()) != null) {
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(new URL(fileLink).openStream()));
-            String i;
-            while ((i = in.readLine()) != null) {
-                System.out.println(i);
+                information = line.split(",");
+                dates[counter] = formatter.parse(information[0]); //transform the data string into date object
+                closing_prices[counter] = Double.parseDouble(information[4]);//transform the closing prices nto double
+                counter++;
+
             }
         } catch (
-                IOException e) {
+                Exception e) {
             // handle exception
+        }
+
+        for (Date i : dates) {
+            System.out.println(i);
         }
 
         //String texts = page.html();

@@ -8,6 +8,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.util.HashMap;
 
+
 public class ConnectedFrames extends JFrame {
 
     ConnectedPanel home_panel, account_panel, transaction_panel, deposit_panel;
@@ -76,8 +77,10 @@ public class ConnectedFrames extends JFrame {
 
         //configure home panel
 
+        //create a jfreechart to plot stock panel
         JPanel StockGraphPanel = new JPanel();
 
+        
         JPanel balancePanel = new JPanel();
         balancePanel.setLayout(new BoxLayout(balancePanel, BoxLayout.Y_AXIS));
 
@@ -251,5 +254,5 @@ public class ConnectedFrames extends JFrame {
 
     }
 
-    
+
 }

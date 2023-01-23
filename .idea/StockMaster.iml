@@ -15,5 +15,6 @@
     <orderEntry type="library" exported="" name="formdev.flatlaf" level="project" />
     <orderEntry type="library" exported="" name="microsoft.sqlserver.mssql.jdbc" level="project" />
     <orderEntry type="library" exported="" name="mysql.connector.j" level="project" />
+    <orderEntry type="library" exported="" name="jfree.jfreechart" level="project" />
   </component>
 </module>
