@@ -6,6 +6,7 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
+import java.io.IOException;
 import java.util.HashMap;
 
 
@@ -22,7 +23,7 @@ public class ConnectedFrames extends JFrame {
     JMenuItem logout_item;
     JTabbedPane tabbedPane;
 
-    public ConnectedFrames(UserAccount account) throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+    public ConnectedFrames(UserAccount account) throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
         //functions to look for historical data
 
 
@@ -77,10 +78,19 @@ public class ConnectedFrames extends JFrame {
 
         //configure home panel
 
-        //create a jfreechart to plot stock panel
-        JPanel StockGraphPanel = new JPanel();
+        //create a StockGraphPanel that extends JPanel to plot stock panel
+        JPanel west_panel = new JPanel();
 
-        
+
+        StockGraph stockGraphPanel;
+        try {
+            stockGraphPanel = new StockGraph("TSLA");
+            west_panel.add(stockGraphPanel);
+        } catch (Exception e) {
+
+        }
+
+
         JPanel balancePanel = new JPanel();
         balancePanel.setLayout(new BoxLayout(balancePanel, BoxLayout.Y_AXIS));
 
@@ -231,6 +241,7 @@ public class ConnectedFrames extends JFrame {
         );
         east_panel.add(largerRigidArea);
         east_panel.add(portfolio_panel);
+        home_panel.add(west_panel, BorderLayout.WEST);
         home_panel.add(east_panel, BorderLayout.EAST);
 
         // tabbedPane.setLayout(());
@@ -245,7 +256,8 @@ public class ConnectedFrames extends JFrame {
 
             ConnectedFrames frames = new ConnectedFrames(new UserAccount("pascal", "edouard"));
             frames.setDefaultCloseOperation(EXIT_ON_CLOSE);
-            frames.setMinimumSize(new Dimension(850, 500));
+            // frames.setMinimumSize(new Dimension(850, 500));
+            frames.pack();
             frames.setVisible(true);
         } catch (Exception ex) {
             ex.printStackTrace();
