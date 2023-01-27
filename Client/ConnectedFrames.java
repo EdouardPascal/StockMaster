@@ -82,13 +82,8 @@ public class ConnectedFrames extends JFrame {
         JPanel west_panel = new JPanel();
 
 
-        StockGraph stockGraphPanel;
-        try {
-            stockGraphPanel = new StockGraph("TSLA");
-            west_panel.add(stockGraphPanel);
-        } catch (Exception e) {
-
-        }
+        StockGraph stockGraphPanel = new StockGraph("TSLA");
+        west_panel.add(stockGraphPanel);
 
 
         JPanel balancePanel = new JPanel();
@@ -203,9 +198,11 @@ public class ConnectedFrames extends JFrame {
                     stock_panel.setForeground(Color.WHITE);
                     stock_panel.setBorder(border);
 
-                    JLabel code = new JLabel(stock_code);
+                    Stock_button code = new Stock_button(west_panel, stock_code);
+
                     code.setFont(UIManager.getFont("h3.font"));
                     code.setForeground(Color.black);
+
 
                     JPanel title = new JPanel();
                     title.setBackground(new Color(255, 255, 255));
@@ -236,8 +233,8 @@ public class ConnectedFrames extends JFrame {
                     portfolio_panel.setBackground(Color.lightGray);
                     portfolio_panel.setForeground(Color.white);
                     portfolio_panel.add(Box.createRigidArea(new Dimension(0, 5)));
-                }
 
+                }
         );
         east_panel.add(largerRigidArea);
         east_panel.add(portfolio_panel);
