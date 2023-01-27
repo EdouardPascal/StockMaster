@@ -32,6 +32,7 @@ public class StockGraph extends JPanel {
     double[] closing_prices = new double[365];
     String[] time = new String[365];
     int counter = 0; //to keep track of what line we are
+    int period_time = 0;
 
     double lowest_price = Double.POSITIVE_INFINITY;
     double highest_price;
@@ -77,7 +78,7 @@ public class StockGraph extends JPanel {
     public XYDataset createDataSet(String stock_code) throws IOException {
         TimeSeries dataset = new TimeSeries("Stock Prices");
         get_historical_data(stock_code);
-        for (int i = 0; i < counter; i++) {//will loop until we reach the null cases of the arrays.
+        for (int i = counter - period_time; i < counter; i++) {//will loop until we reach the null cases of the arrays.
             dataset.add(new Day(dates[i]), closing_prices[i]);
         }
         return new TimeSeriesCollection(dataset);
@@ -86,10 +87,34 @@ public class StockGraph extends JPanel {
     }
 
 
-    public StockGraph(String stock_code) throws IOException
+    public StockGraph(String stock_code, String period) throws IOException
     //constructor using the stock_code
     {
+        int unit_period = 30;
 
+
+        if (period.equals("1Y")) {
+            period_time = 0; //we will start saving the file from the begining
+            unit_period = 30;//start showing every month
+        }
+
+        if (period.equals("1W")) {
+            period_time = 7;
+            unit_period = 1;
+
+        }
+        if (period.equals("1M")) {
+            period_time = 30;
+            unit_period = 3;
+        }
+        if (period.equals("3M")) {
+            period_time = 90;
+            unit_period = 9;
+        }
+        if (period.equals("5M")) {
+            period_time = 150;
+            unit_period = 15;
+        }
 
         JFreeChart stock_chart = ChartFactory.createTimeSeriesChart("Yearly Performance",
                 "Date", "Stock Price", createDataSet(stock_code));
@@ -99,7 +124,7 @@ public class StockGraph extends JPanel {
 
 
         DateAxis domain = (DateAxis) plot.getDomainAxis();
-        domain.setTickUnit(new DateTickUnit(DateTickUnitType.DAY, 1, new SimpleDateFormat("MMM-dd-yy")));
+        domain.setTickUnit(new DateTickUnit(DateTickUnitType.DAY, unit_period, new SimpleDateFormat("MMM-dd-yy")));
         domain.setVerticalTickLabels(true);
         domain.setAutoRange(true);
 
