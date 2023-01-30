@@ -7,6 +7,7 @@ import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.DateTickUnitType;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -97,7 +98,9 @@ public class StockGraph extends JPanel {
 
 
         XYPlot plot = stock_chart.getXYPlot();
-
+        XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
+        renderer.setDefaultShapesVisible(true);
+        renderer.setDrawOutlines(true);
 
         DateAxis domain = (DateAxis) plot.getDomainAxis();
         domain.setTickUnit(new DateTickUnit(DateTickUnitType.DAY, 30, new SimpleDateFormat("MMM-dd-yy")), true, true);

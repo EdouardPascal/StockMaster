@@ -153,9 +153,6 @@ public class UserAccount implements Serializable {
                 stock_code = resultSet.getString("stock_code");
                 quantity = resultSet.getDouble("quantity");
                 money += real_time_price(stock_code) * quantity;
-                System.out.println("Added " + quantity + " of stock " + stock_code);
-
-                System.out.println("Total invested: " + money);
 
             }
             this.money_available = money;
