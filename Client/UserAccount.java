@@ -3,6 +3,7 @@ package Client;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import javax.swing.*;
 import java.io.Serializable;
 import java.sql.*;
 import java.util.HashMap;
@@ -93,7 +94,7 @@ public class UserAccount implements Serializable {
             // create a connection to the database
             connection = DriverManager.getConnection(url, database_username, database_password);
 
-            System.out.println("Connection to SQLite has been established.");
+
             /////////look into the table userpass for matching username and password
             PreparedStatement preparedStatement = (PreparedStatement)
                     connection.prepareStatement("SELECT* FROM userpass where username=? and password=?");
@@ -104,11 +105,11 @@ public class UserAccount implements Serializable {
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 this.money_available = resultSet.getDouble("money_available");
-                System.out.println(this.money_available);
+
                 return this.money_available;
 
             } else {
-                System.out.println("Wrong Username & Password");
+                JOptionPane.showMessageDialog(null, "Wrong Username or Password", "Incorrect", JOptionPane.WARNING_MESSAGE);
                 //  JOptionPane.showMessageDialog(new JButton(), "Wrong Username & Password");
                 return 0.0;
             }
@@ -139,7 +140,7 @@ public class UserAccount implements Serializable {
             // create a connection to the database
             connection = DriverManager.getConnection(url, database_username, database_password);
 
-            System.out.println("Connection to SQLite has been established.");
+
             /////////look into the table userpass for matching username and password
             PreparedStatement preparedStatement = (PreparedStatement)
                     connection.prepareStatement("SELECT* FROM stock_owner where username=?");
@@ -200,11 +201,10 @@ public class UserAccount implements Serializable {
                 code = resultSet.getString("stock_code");
                 quantity = resultSet.getDouble("quantity");
                 list_stock.put(code, quantity);
-                System.out.println("Added " + quantity + "of stock: " + code + " to the list ");
 
 
             }
-            System.out.println(list_stock);
+
             return list_stock;
 
         } catch (Exception ex) {
@@ -266,7 +266,8 @@ public class UserAccount implements Serializable {
     //by connecting to database and modifiying quantity column from stock_owner table and also list_stock object
     {
         if (amount_money > getMoney_available()) {//if not enough money
-            System.out.println("Not enough money to perform this acquisition");
+            JOptionPane.showMessageDialog(null, "Not enough money to perform this acquisition", "Incorrect", JOptionPane.WARNING_MESSAGE);
+
             return;
         }
         Connection connection;
@@ -274,10 +275,11 @@ public class UserAccount implements Serializable {
             double quantity_bought = amount_money / real_time_price(stock_code); //calculate quantity brought at the time
 
             connection = DriverManager.getConnection(url, database_username, database_password);
-            System.out.println("Succesfully connected to SQL server");
-            String query = "SELECT* FROM stock_owner where username=? AND stock_code=?";
 
-            PreparedStatement preparedStatement = (PreparedStatement) connection.prepareStatement(query);
+
+            PreparedStatement preparedStatement = (PreparedStatement)
+                    connection.prepareStatement("SELECT quantity FROM stock_owner where username=? AND stock_code=?");
+
             preparedStatement.setString(1, this.username);
             preparedStatement.setString(2, stock_code);
 
@@ -286,24 +288,28 @@ public class UserAccount implements Serializable {
             if (resultSet.next()) {//if user already had that stock we just update the quantity
                 double amount_owned = resultSet.getDouble("quantity");
                 double new_quantity = quantity_bought + amount_owned;
-                query = "UPDATE stock_owner SET quantity=? WHERE stock_code=? and username=?";
-                preparedStatement = (PreparedStatement) connection.prepareStatement(query);
-                preparedStatement.setDouble(1, new_quantity);
-                preparedStatement.setString(2, stock_code);
-                preparedStatement.setString(3, this.username);
 
-                preparedStatement.executeQuery();
+                PreparedStatement another_preparedStatement = (PreparedStatement)
+                        connection.prepareStatement("UPDATE stock_owner SET quantity=? WHERE stock_code=? and username=?");
+                another_preparedStatement.setDouble(1, new_quantity);
+                another_preparedStatement.setString(2, stock_code);
+                another_preparedStatement.setString(3, this.username);
+
+                another_preparedStatement.executeUpdate();
             } else {
-                query = "INSERT INTO stock_owner(stock_code,username,quantity) VALUES(?,?,?)";
-                preparedStatement = (PreparedStatement) connection.prepareStatement(query);
-                preparedStatement.setString(1, stock_code);
-                preparedStatement.setString(2, this.username);
-                preparedStatement.setDouble(3, quantity_bought);
 
-                preparedStatement.executeQuery();
+                PreparedStatement another_preparedStatement = (PreparedStatement)
+                        connection.prepareStatement("INSERT INTO stock_owner(stock_code,username,quantity) VALUES(?,?,?)");
+                another_preparedStatement.setString(1, stock_code);
+                another_preparedStatement.setString(2, this.username);
+                another_preparedStatement.setDouble(3, quantity_bought);
+
+                another_preparedStatement.executeUpdate();
 
             }
 
+            JOptionPane.showMessageDialog(null, "You succesfully bought "
+                    + quantity_bought + " shares of " + stock_code + "for " + amount_money, "Congrats", JOptionPane.WARNING_MESSAGE);
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -321,14 +327,17 @@ public class UserAccount implements Serializable {
 
         //first acknowledge bad cases
         if (!list_stock.containsKey(stock_code)) {
-            System.out.println("You do not own that stock");
+
+            JOptionPane.showMessageDialog(null, "You do not own that stock", "Incorrect", JOptionPane.WARNING_MESSAGE);
             return;
         }
         double price = real_time_price(stock_code);
         double quantity = amount_money / price;
 
         if (quantity > list_stock.get(stock_code)) {
-            System.out.println("You do not own that many stock");
+            JOptionPane.showMessageDialog(null, "You do not own that many stock", "Incorrect", JOptionPane.WARNING_MESSAGE);
+
+
             return;
 
         }
@@ -336,6 +345,9 @@ public class UserAccount implements Serializable {
         Double new_quantity = list_stock.get(stock_code) - quantity;
         list_stock.put(stock_code, new_quantity);
         setStockQuantity(stock_code, new_quantity);
+
+        JOptionPane.showMessageDialog(null, "You successfully sold "
+                + quantity + " shares of " + stock_code, "Congrats", JOptionPane.WARNING_MESSAGE);
 
     }
 
@@ -345,7 +357,7 @@ public class UserAccount implements Serializable {
         Connection connection = null;
         try {
             connection = DriverManager.getConnection(url, database_username, database_password);
-            System.out.println("Succesfully connected to SQL server");
+
             String query = "UPDATE stock_owner SET quantity=? where stock_code=? and username=? ";
             PreparedStatement preparedStatement = (PreparedStatement) connection.prepareStatement(query);
 
@@ -353,7 +365,7 @@ public class UserAccount implements Serializable {
             preparedStatement.setString(2, stock_code);
             preparedStatement.setString(3, this.username);
 
-            preparedStatement.executeQuery();
+            preparedStatement.executeUpdate();
 
 
         } catch (Exception ex) {

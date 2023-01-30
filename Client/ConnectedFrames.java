@@ -5,12 +5,18 @@ import com.formdev.flatlaf.FlatLightLaf;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.DefaultFormatter;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.HashMap;
 
 
 public class ConnectedFrames extends JFrame {
+
+    String current_string = "TSLA";
 
     ConnectedPanel home_panel, account_panel, transaction_panel, deposit_panel;
     JLabel stock_teacher;
@@ -22,6 +28,9 @@ public class ConnectedFrames extends JFrame {
     JMenu account_menu;
     JMenuItem logout_item;
     JTabbedPane tabbedPane;
+    Border border = BorderFactory.createRaisedBevelBorder();
+
+    JPanel east_panel = new JPanel();
 
     public ConnectedFrames(UserAccount account) throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
         //functions to look for historical data
@@ -85,12 +94,189 @@ public class ConnectedFrames extends JFrame {
         StockGraph stockGraphPanel = new StockGraph("TSLA");
         west_panel.add(stockGraphPanel);
 
+        JPanel buyingPanel = new JPanel();
+        buyingPanel.setBorder(BorderFactory.createTitledBorder(border, "Buy/Sell ", TitledBorder.CENTER,
+                TitledBorder.TOP, UIManager.getFont("h2.font"), Color.black));
 
+        //small panel inside buying panel to contain two buttons that will be used to use to select if we want to
+        //buy or sell
+        JPanel buying_choice = new JPanel();
+        buying_choice.setLayout(new BoxLayout(buying_choice, BoxLayout.X_AXIS));
+
+        JButton buy_choice = new JButton("Buy");
+        JButton sell_choice = new JButton("Sell");
+        sell_choice.setBackground(Color.white);
+        sell_choice.setForeground(Color.black);
+        sell_choice.setFont(new Font("Arial", Font.PLAIN, 12));
+        buy_choice.setBackground(Color.green);
+        buy_choice.setForeground(Color.white);
+        buy_choice.setFont(new Font("Arial", Font.BOLD, 12));
+
+
+        //listener to add to transaction button to perform operation
+
+
+        class Sell_Listener implements ActionListener {
+            String stock;
+            double amount;
+            JSpinner jspinner;
+
+            public Sell_Listener(String code, JSpinner spinner) {
+                this.stock = code;
+                this.jspinner = spinner;
+            }
+
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    jspinner.commitEdit();
+
+                    account.sell_stock(stock, (Double) jspinner.getValue());
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+
+            }
+        }
+
+        class Buy_Listener implements ActionListener {
+            String stock;
+            JSpinner jSpinner;
+
+            public Buy_Listener(String code, JSpinner spinner) {
+                this.stock = code;
+                this.jSpinner = spinner;
+            }
+
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    jSpinner.commitEdit();
+                    account.buy_stock(stock, (Double) jSpinner.getValue());
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+
+            }
+        }
+
+        buyingPanel.add(buying_choice);
+
+        double maximum_amount = 0.0;
+        SpinnerNumberModel numberModel = new SpinnerNumberModel(0.0, 0.0, account.getMoney_available(), 0.01);
+        JSpinner numberChooser = new JSpinner(numberModel);
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+
+
+                numberChooser.setEditor(new JSpinner.NumberEditor(numberChooser, "###,##0.0#"));
+                JSpinner.NumberEditor jsEditor = (JSpinner.NumberEditor) numberChooser.getEditor();
+                DefaultFormatter formatter = (DefaultFormatter) jsEditor.getTextField().getFormatter();
+                formatter.setAllowsInvalid(false);
+
+                buyingPanel.add(numberChooser);
+            }
+        });
+
+
+        JButton transaction = new JButton("Buy " + current_string);
+        transaction.setBackground(Color.green);
+        transaction.setForeground(Color.white);
+        transaction.setFont(new Font("Arial", Font.BOLD, 20));
+        Buy_Listener buy_listener = new Buy_Listener(current_string, numberChooser);
+        transaction.addActionListener(buy_listener);
+
+        buyingPanel.add(transaction);
+        buy_choice.addActionListener(e -> {
+            sell_choice.setBackground(Color.white);
+            sell_choice.setForeground(Color.black);
+            sell_choice.setFont(new Font("Arial", Font.PLAIN, 12));
+            buy_choice.setBackground(Color.green);
+            buy_choice.setForeground(Color.white);
+            buy_choice.setFont(new Font("Arial", Font.BOLD, 12));
+            numberModel.setMaximum(account.getMoney_available());
+            transaction.setText("Buy " + current_string);
+
+            try {
+                numberChooser.commitEdit();
+            } catch (ParseException ex) {
+                throw new RuntimeException(ex);
+            }
+            for (ActionListener listener : transaction.getActionListeners()) {
+                transaction.removeActionListener(listener);
+            }
+            Double value = (Double) numberChooser.getValue();
+            double value_double = value.doubleValue();
+            transaction.addActionListener(new Buy_Listener(current_string, numberChooser));
+            buyingPanel.repaint();
+        });
+
+        sell_choice.addActionListener(e -> {
+            buy_choice.setBackground(Color.white);
+            buy_choice.setForeground(Color.black);
+            buy_choice.setFont(new Font("Arial", Font.PLAIN, 12));
+            sell_choice.setBackground(Color.green);
+            sell_choice.setForeground(Color.white);
+            sell_choice.setFont(new Font("Arial", Font.BOLD, 12));
+            try {
+                numberModel.setMaximum(account.real_time_price(current_string) *
+                        account.getList_stock().get(current_string));
+            } catch (Exception exception) {
+
+            }
+            transaction.setText("Sell " + current_string);
+
+            try {
+                numberChooser.commitEdit();
+            } catch (ParseException ex) {
+                throw new RuntimeException(ex);
+            }
+            for (ActionListener listener : transaction.getActionListeners()) {
+                transaction.removeActionListener(listener);
+            }
+            Double value = (Double) numberChooser.getValue();
+            double value_double = value.doubleValue();
+            transaction.addActionListener(new Sell_Listener(current_string, numberChooser));
+            buyingPanel.repaint();
+        });
+
+
+        buying_choice.add(buy_choice);
+        buying_choice.add(sell_choice);
+
+
+        //Action Listener for the portfolio button to interact with the graph
+        class Stock_button_listener implements ActionListener {
+            String stock;
+
+            public Stock_button_listener(String stock_code) {
+                this.stock = stock_code;
+            }
+
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    current_string = stock;
+                    buyingPanel.setBorder(BorderFactory.createTitledBorder(border, "Buy/Sell " + current_string, TitledBorder.CENTER,
+                            TitledBorder.TOP, UIManager.getFont("h2.font"), Color.black));
+                    east_panel.repaint();
+                    west_panel.removeAll();
+                    west_panel.add(new StockGraph(stock));
+                    west_panel.validate();
+                    west_panel.repaint();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+            }
+
+        }
+
+
+        //panel to hold the balance and the amount of money we have
         JPanel balancePanel = new JPanel();
         balancePanel.setLayout(new BoxLayout(balancePanel, BoxLayout.Y_AXIS));
 
         balancePanel.setBackground(Color.lightGray);
-        Border border = BorderFactory.createRaisedBevelBorder();
+
         balancePanel.setBorder(BorderFactory.createTitledBorder(border, "Balance", TitledBorder.CENTER,
                 TitledBorder.TOP, UIManager.getFont("h2.font"), Color.black));
 
@@ -174,9 +360,11 @@ public class ConnectedFrames extends JFrame {
 
         }
 
-        JPanel east_panel = new JPanel();
+
         east_panel.setLayout(new BoxLayout(east_panel, BoxLayout.Y_AXIS));
         east_panel.setBackground(Color.white);
+        east_panel.add(buyingPanel);
+        east_panel.add(largerRigidArea);
         east_panel.add(balancePanel);
 
         JPanel portfolio_panel = new JPanel();
@@ -198,7 +386,9 @@ public class ConnectedFrames extends JFrame {
                     stock_panel.setForeground(Color.WHITE);
                     stock_panel.setBorder(border);
 
-                    Stock_button code = new Stock_button(west_panel, stock_code);
+                    JButton code = new JButton(stock_code);
+                    code.addActionListener(new Stock_button_listener(stock_code));
+
 
                     code.setFont(UIManager.getFont("h3.font"));
                     code.setForeground(Color.black);
@@ -244,7 +434,10 @@ public class ConnectedFrames extends JFrame {
         // tabbedPane.setLayout(());
 
         this.getContentPane().add(tabbedPane);
+
+
     }
+
 
     public static void main(String[] args) {
 

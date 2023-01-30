@@ -86,13 +86,13 @@ public class StockGraph extends JPanel {
 
     }
 
-    
+
     public StockGraph(String stock_code) throws IOException
     //constructor using the stock_code
     {
 
 
-        JFreeChart stock_chart = ChartFactory.createTimeSeriesChart("Yearly Performance",
+        JFreeChart stock_chart = ChartFactory.createTimeSeriesChart(stock_code.toUpperCase() + " Yearly Performance",
                 "Date", "Stock Price", createDataSet(stock_code));
 
 
