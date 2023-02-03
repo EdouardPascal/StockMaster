@@ -8,14 +8,19 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.sql.*;
+
+import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 
 public class UserInterface {
+    ConnectedFrames frames;
     // AccountList accountList = null;
 
     Server.UserAccount userAccount = new UserAccount("pascal");
     LogFrames log_page;
+
     LogFrames create_page;
 
     //   public UserInterface(AccountList list) {
@@ -96,6 +101,15 @@ public class UserInterface {
                 //ah.setTitle("Welcome");
                 //ah.setVisible(true);
                 JOptionPane.showMessageDialog(log_page.login, "You have successfully logged in");
+                frames = new ConnectedFrames(new Client.UserAccount(Username, Password));
+                frames.setDefaultCloseOperation(EXIT_ON_CLOSE);
+                // frames.setMinimumSize(new Dimension(850, 500));
+                frames.pack();
+                frames.setPreferredSize(new Dimension(850, 500));
+                frames.setVisible(true);
+
+                log_page.setVisible(false);
+
             } else {
                 System.out.println("Wrong Username & Password");
                 JOptionPane.showMessageDialog(log_page.login, "Wrong Username & Password");
@@ -103,6 +117,16 @@ public class UserInterface {
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+        } catch (UnsupportedLookAndFeelException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
         } finally {
             try {
                 if (connection != null) {

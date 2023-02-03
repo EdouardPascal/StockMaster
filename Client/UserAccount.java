@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.io.Serializable;
 import java.sql.*;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class UserAccount implements Serializable {
@@ -61,7 +62,7 @@ public class UserAccount implements Serializable {
             preparedStatement.setDouble(1, amount);
             preparedStatement.setString(2, this.username);
 
-            preparedStatement.executeQuery();
+            preparedStatement.executeUpdate();
 
 
         } catch (Exception ex) {
@@ -342,6 +343,7 @@ public class UserAccount implements Serializable {
         Double new_quantity = list_stock.get(stock_code) - quantity;
         list_stock.put(stock_code, new_quantity);
         setStockQuantity(stock_code, new_quantity);
+        setMoney_available(getMoney_available() + amount_money);
 
         JOptionPane.showMessageDialog(null, "You successfully sold "
                 + quantity + " shares of " + stock_code, "Congrats", JOptionPane.WARNING_MESSAGE);
@@ -378,6 +380,8 @@ public class UserAccount implements Serializable {
             }
         }
     }
+
+    public void initialize_searchbar(List<String>)
 
 
 }

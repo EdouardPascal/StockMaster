@@ -48,10 +48,10 @@ public class LogFrames extends JFrame {
         titlePanel.setBackground(Color.WHITE);
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
         titlePanel.add(westLabel);
-        titlePanel.setBorder(BorderFactory.createEmptyBorder(50, 20, 0, 0));
+        // titlePanel.setBorder(BorderFactory.createEmptyBorder(50, 20, 0, 0));
 
         //configure the west panel of west frame and adding components
-        westPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 100, 100));
+        //westPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 100, 100));
         westPanel.setBackground(Color.WHITE);
 
         westPanel.add(titlePanel, BorderLayout.CENTER);
@@ -162,7 +162,7 @@ public class LogFrames extends JFrame {
 
         this.getContentPane().add(BorderLayout.WEST, westPanel);
         this.getContentPane().add(BorderLayout.CENTER, eastPanel);
-        this.pack();
+        //this.pack();
     }
 
 }
