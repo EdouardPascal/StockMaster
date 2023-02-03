@@ -18,12 +18,12 @@ import java.util.List;
 
 public class ConnectedFrames extends JFrame {
 
-    HashMap<String, String> stock_convertion = new HashMap<>();//hasmap with stock name as set and stock_code as value
-    List<String> stockname = new ArrayList<String>();
+    final int SEARCH_BAR_POSITION = 1;
+    final int STOCKGRAPH_POSITION = 2;
 
-
-    StringSearchable searchable = new StringSearchable(stockname);
-
+    AutoCompleteJComboBox
+            searchbar;
+    HashMap<String, String> stock_convertion;
 
     String current_string = "TSLA";
 
@@ -51,13 +51,40 @@ public class ConnectedFrames extends JFrame {
     JButton transaction;
     UserAccount account;
 
-    public ConnectedFrames(UserAccount UserAccount) throws UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
-        
+    public ConnectedFrames(UserAccount UserAccount) throws Exception, UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
+
 
         //functions to look for historical data
         ConnectedFrames frames = this;
         this.account = UserAccount;
         this.pack();
+
+        //initialize search bar
+        stock_convertion = new HashMap<>();//hasmap with stock name as set and stock_code as value
+        List<String> stockname = new ArrayList<String>();
+        account.initialize_searchbar(stockname, stock_convertion);
+        StringSearchable searchable = new StringSearchable(stockname);
+        searchbar = new AutoCompleteJComboBox(searchable);
+
+        searchbar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String selection = (String) searchbar.getSelectedItem();
+                String code = stock_convertion.get(selection);
+                current_string = code;
+                west_panel.remove(STOCKGRAPH_POSITION);
+                west_panel.add(new StockGraph(current_string), STOCKGRAPH_POSITION);
+
+
+            }
+        });
+
+
+        west_panel = new JPanel();
+        west_panel.setLayout(new BoxLayout(west_panel, BoxLayout.Y_AXIS));
+
+
+        west_panel.add(searchbar);
+
 
         balancePane balancePanel = new balancePane(account);
         Component largerRigidArea = Box.createRigidArea(new Dimension(0, 10));
@@ -117,7 +144,6 @@ public class ConnectedFrames extends JFrame {
         //configure home panel
 
         //create a StockGraphPanel that extends JPanel to plot stock panel
-        west_panel = new JPanel();
 
 
         StockGraph stockGraphPanel = new StockGraph("TSLA");

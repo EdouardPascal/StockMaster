@@ -18,7 +18,7 @@ public class StringSearchable {
 
         for (String s : terms) {
 
-            if (s.indexOf(value) == 0) {
+            if (s.toUpperCase().indexOf(value.toUpperCase()) == 0) {
 
                 founds.add(s);
 
@@ -28,5 +28,5 @@ public class StringSearchable {
 
         return founds;
     }
-    
+
 }

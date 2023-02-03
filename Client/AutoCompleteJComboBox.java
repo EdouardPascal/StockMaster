@@ -25,6 +25,8 @@ public class AutoCompleteJComboBox extends JComboBox {
     public AutoCompleteJComboBox(StringSearchable s) {
 
         super();
+        putClientProperty("JComboBox.isTableCellEditor", Boolean.TRUE);
+
 
         this.searchable = s;
 
@@ -78,6 +80,7 @@ public class AutoCompleteJComboBox extends JComboBox {
 
                         public void run() {
 
+
                             ArrayList<String> founds = new ArrayList<String>(searchable.search(tc.getText()));
 
                             Set<String> foundSet = new HashSet<String>();
@@ -118,6 +121,7 @@ public class AutoCompleteJComboBox extends JComboBox {
 
 
                     });
+                    requestFocus();
 
 
                 }

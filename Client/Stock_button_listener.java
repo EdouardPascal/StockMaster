@@ -81,8 +81,9 @@ public class Stock_button_listener implements ActionListener {
             frames.buyingPanel.setBorder(BorderFactory.createTitledBorder(border, "Buy/Sell " + frames.current_string, TitledBorder.CENTER,
                     TitledBorder.TOP, UIManager.getFont("h2.font"), Color.black));
             frames.east_panel.repaint();
-            frames.west_panel.removeAll();
-            frames.west_panel.add(new StockGraph(stock));
+
+            frames.west_panel.remove(2);
+            frames.west_panel.add(new StockGraph(stock), 2);
             frames.west_panel.validate();
             frames.west_panel.repaint();
         } catch (IOException ex) {

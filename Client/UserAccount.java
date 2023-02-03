@@ -381,7 +381,40 @@ public class UserAccount implements Serializable {
         }
     }
 
-    public void initialize_searchbar(List<String>)
+    public void initialize_searchbar(List<String> stockname, HashMap<String, String> stock_conversion) {
+
+       
+        //take in parameters reference to the list of stockname and a hashtable with stock name as set and code as value
+        Connection connection;
+        //add searchbar
+        try {
+            connection = DriverManager.getConnection(url, database_username, database_password);
+
+            PreparedStatement statement;
+            ResultSet resultSet;
+            String query = "SELECT* FROM stock_name"; //take all the value from the table that has stock name information
+            statement = (PreparedStatement) connection.prepareStatement(query);
+
+            resultSet = statement.executeQuery();
+
+            String code;
+            String name;
+            while (resultSet.next()) {
+                code = resultSet.getString("stock_code");
+                name = resultSet.getString("stock_name");
+
+                stockname.add(name);
+                stock_conversion.put(name, code);
+
+
+            }
+        } catch (
+                Exception exception) {
+            throw new RuntimeException(exception);
+        }
+
+
+    }
 
 
 }
