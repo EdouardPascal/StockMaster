@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -22,7 +23,7 @@ public class ConnectedFrames extends JFrame {
 
     AutoCompleteJComboBox
             searchbar;
-    StockList stock_convertion = new StockList();
+
 
     String current_string = "TSLA";
 
@@ -37,6 +38,8 @@ public class ConnectedFrames extends JFrame {
     JMenuItem logout_item;
     JTabbedPane tabbedPane;
     Border border = BorderFactory.createRaisedBevelBorder();
+
+    HashMap<String, String> stock_convertion = new HashMap<>();
 
     JPanel east_panel = new JPanel();
     JPanel west_panel;
@@ -93,7 +96,7 @@ public class ConnectedFrames extends JFrame {
         //initialize search bar
         //hasmap with stock name as set and stock_code as value
         List<String> stockname = new ArrayList<String>();
-        account.initialize_searchbar(stockname);
+        account.initialize_searchbar(stockname, stock_convertion);
         StringSearchable searchable = new StringSearchable(stockname);
         searchbar = new AutoCompleteJComboBox(searchable);
 
@@ -126,7 +129,7 @@ public class ConnectedFrames extends JFrame {
                 }
 
                 try {
-                    west_panel.add(new StockGraph(current_string, stock_convertion));
+                    west_panel.add(new StockGraph(current_string));
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -235,7 +238,7 @@ public class ConnectedFrames extends JFrame {
         //create a StockGraphPanel that extends JPanel to plot stock panel
 
 
-        StockGraph stockGraphPanel = new StockGraph("TSLA", stock_convertion);
+        StockGraph stockGraphPanel = new StockGraph("TSLA");
         west_panel.add(stockGraphPanel);
 
         buyingPanel = new

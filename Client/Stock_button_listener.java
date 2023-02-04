@@ -84,7 +84,7 @@ public class Stock_button_listener implements ActionListener {
 
 
             frames.west_panel.remove(2);
-            frames.west_panel.add(new StockGraph(stock, frames.stock_convertion), 2);
+            frames.west_panel.add(new StockGraph(stock), 2);
             frames.west_panel.validate();
             frames.west_panel.repaint();
         } catch (IOException ex) {

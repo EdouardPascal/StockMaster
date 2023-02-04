@@ -29,6 +29,8 @@ import java.util.Date;
 //API that create a stockGraph object
 public class StockGraph extends JPanel {
 
+    StockList stockList = new StockList();
+
     //create 2 arrays of size 365 since it will be the maximum amount of points in one year
     Date[] dates = new Date[365];
     double[] closing_prices = new double[365];
@@ -89,18 +91,19 @@ public class StockGraph extends JPanel {
     }
 
 
-    public StockGraph(String stock_code, StockList stock_convertion) throws IOException
+    public StockGraph(String stock_code) throws IOException
     //constructor using the stock_code
     {
 
 
         JFreeChart stock_chart = ChartFactory.createTimeSeriesChart(stock_code.toUpperCase() + " Yearly Performance",
                 "Date", "Stock Price", createDataSet(stock_code));
-        String stockname = "TSLA";
-        stockname = stock_convertion.get(stock_code);
 
-        TextTitle title = new TextTitle(stockname);
-        stock_chart.addSubtitle(new TextTitle(stock_convertion.get(stock_code)));
+
+        TextTitle title = new TextTitle(stockList.get(stock_code));
+        stock_chart.addSubtitle(title);
+
+
         XYPlot plot = stock_chart.getXYPlot();
         XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
         renderer.setDefaultShapesVisible(true);

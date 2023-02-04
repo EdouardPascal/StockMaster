@@ -34,7 +34,7 @@ public class StockList extends HashMap<String, String> {
                 code = resultSet.getString("stock_code");
                 name = resultSet.getString("stock_name");
 
-                this.put(name, code);
+                this.put(code, name);
 
 
             }
@@ -45,6 +45,7 @@ public class StockList extends HashMap<String, String> {
 
 
     }
+
 
 }
 
