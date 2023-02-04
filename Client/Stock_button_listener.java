@@ -82,6 +82,7 @@ public class Stock_button_listener implements ActionListener {
                     TitledBorder.TOP, UIManager.getFont("h2.font"), Color.black));
             frames.east_panel.repaint();
 
+           
             frames.west_panel.remove(2);
             frames.west_panel.add(new StockGraph(stock), 2);
             frames.west_panel.validate();

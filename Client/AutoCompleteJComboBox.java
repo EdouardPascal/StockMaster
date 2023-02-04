@@ -25,6 +25,7 @@ public class AutoCompleteJComboBox extends JComboBox {
     public AutoCompleteJComboBox(StringSearchable s) {
 
         super();
+        
         putClientProperty("JComboBox.isTableCellEditor", Boolean.TRUE);
 
 

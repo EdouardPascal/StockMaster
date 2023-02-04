@@ -59,6 +59,38 @@ public class ConnectedFrames extends JFrame {
         this.account = UserAccount;
         this.pack();
 
+        class Buy_Listener implements ActionListener {
+            String stock;
+            JSpinner jSpinner;
+
+            public Buy_Listener(String code, JSpinner spinner) {
+                this.stock = code;
+                this.jSpinner = spinner;
+            }
+
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    jSpinner.commitEdit();
+                    account.buy_stock(stock, (Double) jSpinner.getValue());
+
+                    east_panel.removeAll();
+                    east_panel.add(buyingPanel);
+                    east_panel.add(Box.createRigidArea(new Dimension(0, 5)));
+                    east_panel.add(new balancePane(account));
+                    east_panel.add(Box.createRigidArea(new Dimension(0, 5)));
+
+
+                    east_panel.add(new porfolioPane(account, frames));
+
+                    east_panel.repaint();
+                    east_panel.revalidate();
+
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+
+            }
+        }
         //initialize search bar
         stock_convertion = new HashMap<>();//hasmap with stock name as set and stock_code as value
         List<String> stockname = new ArrayList<String>();
@@ -66,24 +98,72 @@ public class ConnectedFrames extends JFrame {
         StringSearchable searchable = new StringSearchable(stockname);
         searchbar = new AutoCompleteJComboBox(searchable);
 
-        searchbar.addActionListener(new ActionListener() {
+
+        JPanel search_panel = new JPanel();
+        search_panel.setLayout(new BoxLayout(search_panel, BoxLayout.X_AXIS));
+        searchbar.setPreferredSize(new Dimension(300, 5));
+        searchbar.setBorder(BorderFactory.createEmptyBorder());
+        search_panel.setBorder(BorderFactory.createLoweredBevelBorder());
+
+        search_panel.setPreferredSize(new Dimension(305, 5));
+        search_panel.add(searchbar);
+        JButton search_button = new JButton();
+        search_button.setIcon(new
+
+                ImageIcon("icon/search.png"));
+        search_panel.add(search_button);
+        search_panel.setOpaque(false);
+
+
+        search_button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+
                 String selection = (String) searchbar.getSelectedItem();
                 String code = stock_convertion.get(selection);
                 current_string = code;
-                west_panel.remove(STOCKGRAPH_POSITION);
-                west_panel.add(new StockGraph(current_string), STOCKGRAPH_POSITION);
 
+                for (Component i : west_panel.getComponents()) {
+                    if (i instanceof StockGraph) west_panel.remove(i);
+                }
 
+                try {
+                    west_panel.add(new StockGraph(current_string));
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+                sell_choice.setBackground(Color.white);
+                sell_choice.setForeground(Color.black);
+                sell_choice.setFont(new Font("Arial", Font.PLAIN, 12));
+                buy_choice.setBackground(Color.green);
+                buy_choice.setForeground(Color.white);
+                buy_choice.setFont(new Font("Arial", Font.BOLD, 12));
+                numberModel.setMaximum(account.getMoney_available());
+                transaction.setText("Buy " + current_string);
+
+                for (ActionListener listener : transaction.getActionListeners()) {
+                    transaction.removeActionListener(listener);
+                }
+                transaction.addActionListener(new Buy_Listener(current_string, numberChooser));
+
+                west_panel.revalidate();
+                west_panel.repaint();
+
+                east_panel.revalidate();
+                east_panel.repaint();
             }
         });
 
 
-        west_panel = new JPanel();
-        west_panel.setLayout(new BoxLayout(west_panel, BoxLayout.Y_AXIS));
+        west_panel = new
+
+                JPanel();
+        west_panel.setLayout(new
+
+                BoxLayout(west_panel, BoxLayout.Y_AXIS));
 
 
-        west_panel.add(searchbar);
+        west_panel.add(search_panel);
 
 
         balancePane balancePanel = new balancePane(account);
@@ -92,12 +172,16 @@ public class ConnectedFrames extends JFrame {
         rigidArea.setBackground(Color.white);
 
         //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        UIManager.setLookAndFeel(new FlatLightLaf());
+        UIManager.setLookAndFeel(new
+
+                FlatLightLaf());
         //UIManager.put("TabbedPane.selectedBackground", Color.green);
 
         UIManager.put("TabbedPane.showTabSeparators", true);
         UIManager.put("TabbedPane.tabSeparatorsFullHeight", true);
-        tabbedPane = new JTabbedPane(JTabbedPane.LEFT);
+        tabbedPane = new
+
+                JTabbedPane(JTabbedPane.LEFT);
 
 
         tabbedPane.setFocusable(false);
@@ -106,33 +190,39 @@ public class ConnectedFrames extends JFrame {
         //tabbedPane.setFont(UI.);
         //tabbedPane.setForeground(Color.BLUE);
 
-        home_panel = new JPanel();
-        home_panel.setLayout(new BoxLayout(home_panel, BoxLayout.X_AXIS));
+        home_panel = new
+
+                JPanel();
+        home_panel.setLayout(new
+
+                BoxLayout(home_panel, BoxLayout.X_AXIS));
         home_panel.setBackground(Color.white);
         //create home tab
-        transaction_panel = new JPanel(); //create transaction tab
-        deposit_panel = new JPanel();
-        account_panel = new JPanel();
+        transaction_panel = new
+
+                JPanel(); //create transaction tab
+
+        deposit_panel = new
+
+                JPanel();
+
+        account_panel = new
+
+                JPanel();
 
 
-        stock_teacher = new JLabel("StockMaster");
-        stock_teacher.setIcon(new ImageIcon("icon/stock-market.png"));
+        stock_teacher = new
+
+                JLabel("StockMaster");
+        stock_teacher.setIcon(new
+
+                ImageIcon("icon/stock-market.png"));
 
         top_page.add(stock_teacher);
 
-        JPanel search_panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-        search = new JTextField(30);
-        search.setBorder(BorderFactory.createEmptyBorder());
-        search_panel.setBorder(BorderFactory.createLoweredBevelBorder());
 
-        search_panel.add(search);
+        // top_page.add(search_panel);
 
-        top_page.add(search_panel);
-
-        JButton search_button = new JButton();
-        search_button.setIcon(new ImageIcon("icon/search.png"));
-        search_panel.add(search_button);
-        search_panel.setOpaque(false);
 
         ImageIcon homeIcon = new ImageIcon("icon/home-button.png");
         tabbedPane.addTab("Home", homeIcon, home_panel);
@@ -149,23 +239,38 @@ public class ConnectedFrames extends JFrame {
         StockGraph stockGraphPanel = new StockGraph("TSLA");
         west_panel.add(stockGraphPanel);
 
-        buyingPanel = new JPanel();
+        buyingPanel = new
+
+                JPanel();
         buyingPanel.setBorder(BorderFactory.createTitledBorder(border, "Buy/Sell ", TitledBorder.CENTER,
                 TitledBorder.TOP, UIManager.getFont("h2.font"), Color.black));
 
         //small panel inside buying panel to contain two buttons that will be used to use to select if we want to
         //buy or sell
-        buying_choice = new JPanel();
-        buying_choice.setLayout(new BoxLayout(buying_choice, BoxLayout.X_AXIS));
+        buying_choice = new
 
-        buy_choice = new JButton("Buy");
-        sell_choice = new JButton("Sell");
+                JPanel();
+        buying_choice.setLayout(new
+
+                BoxLayout(buying_choice, BoxLayout.X_AXIS));
+
+        buy_choice = new
+
+                JButton("Buy");
+
+        sell_choice = new
+
+                JButton("Sell");
         sell_choice.setBackground(Color.white);
         sell_choice.setForeground(Color.black);
-        sell_choice.setFont(new Font("Arial", Font.PLAIN, 12));
+        sell_choice.setFont(new
+
+                Font("Arial", Font.PLAIN, 12));
         buy_choice.setBackground(Color.green);
         buy_choice.setForeground(Color.white);
-        buy_choice.setFont(new Font("Arial", Font.BOLD, 12));
+        buy_choice.setFont(new
+
+                Font("Arial", Font.BOLD, 12));
 
 
         //listener to add to transaction button to perform operation
@@ -206,68 +311,48 @@ public class ConnectedFrames extends JFrame {
 
         }
 
-        class Buy_Listener implements ActionListener {
-            String stock;
-            JSpinner jSpinner;
-
-            public Buy_Listener(String code, JSpinner spinner) {
-                this.stock = code;
-                this.jSpinner = spinner;
-            }
-
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    jSpinner.commitEdit();
-                    account.buy_stock(stock, (Double) jSpinner.getValue());
-
-                    east_panel.removeAll();
-                    east_panel.add(buyingPanel);
-                    east_panel.add(Box.createRigidArea(new Dimension(0, 5)));
-                    east_panel.add(new balancePane(account));
-                    east_panel.add(Box.createRigidArea(new Dimension(0, 5)));
-
-
-                    east_panel.add(new porfolioPane(account, frames));
-
-                    east_panel.repaint();
-                    east_panel.revalidate();
-
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
-
-            }
-        }
 
         buyingPanel.add(buying_choice);
 
         double maximum_amount = 0.0;
-        numberModel = new SpinnerNumberModel(0.0, 0.0, account.getMoney_available(), 0.01);
-        numberChooser = new JSpinner(numberModel);
+        numberModel = new
 
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
+                SpinnerNumberModel(0.0, 0.0, account.getMoney_available(), 0.01);
+        numberChooser = new
 
+                JSpinner(numberModel);
 
-                numberChooser.setEditor(new JSpinner.NumberEditor(numberChooser, "###,##0.0#"));
-                JSpinner.NumberEditor jsEditor = (JSpinner.NumberEditor) numberChooser.getEditor();
-                DefaultFormatter formatter = (DefaultFormatter) jsEditor.getTextField().getFormatter();
-                formatter.setAllowsInvalid(false);
+        SwingUtilities.invokeLater(new
 
-                buyingPanel.add(numberChooser);
-            }
-        });
+                                           Runnable() {
+                                               public void run() {
 
 
-        transaction = new JButton("Buy " + current_string);
+                                                   numberChooser.setEditor(new JSpinner.NumberEditor(numberChooser, "###,##0.0#"));
+                                                   JSpinner.NumberEditor jsEditor = (JSpinner.NumberEditor) numberChooser.getEditor();
+                                                   DefaultFormatter formatter = (DefaultFormatter) jsEditor.getTextField().getFormatter();
+                                                   formatter.setAllowsInvalid(false);
+
+                                                   buyingPanel.add(numberChooser);
+                                               }
+                                           });
+
+
+        transaction = new
+
+                JButton("Buy " + current_string);
         transaction.setBackground(Color.green);
         transaction.setForeground(Color.white);
-        transaction.setFont(new Font("Arial", Font.BOLD, 20));
+        transaction.setFont(new
+
+                Font("Arial", Font.BOLD, 20));
         Buy_Listener buy_listener = new Buy_Listener(current_string, numberChooser);
         transaction.addActionListener(buy_listener);
 
         buyingPanel.add(transaction);
-        buy_choice.addActionListener(e -> {
+        buy_choice.addActionListener(e ->
+
+        {
             sell_choice.setBackground(Color.white);
             sell_choice.setForeground(Color.black);
             sell_choice.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -291,7 +376,9 @@ public class ConnectedFrames extends JFrame {
             buyingPanel.repaint();
         });
 
-        sell_choice.addActionListener(e -> {
+        sell_choice.addActionListener(e ->
+
+        {
             buy_choice.setBackground(Color.white);
             buy_choice.setForeground(Color.black);
             buy_choice.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -331,7 +418,9 @@ public class ConnectedFrames extends JFrame {
         //panel to hold the balance and the amount of money we have
 
 
-        east_panel.setLayout(new BoxLayout(east_panel, BoxLayout.Y_AXIS));
+        east_panel.setLayout(new
+
+                BoxLayout(east_panel, BoxLayout.Y_AXIS));
         east_panel.setBackground(Color.white);
         east_panel.add(buyingPanel);
         east_panel.add(largerRigidArea);
@@ -343,16 +432,28 @@ public class ConnectedFrames extends JFrame {
 
         east_panel.add(largerRigidArea);
         east_panel.add(portfolio_panel);
-        home_panel.add(Box.createRigidArea(new Dimension(10, 0)));
+        home_panel.add(Box.createRigidArea(new
+
+                Dimension(10, 0)));
         home_panel.add(west_panel);
-        home_panel.add(Box.createRigidArea(new Dimension(10, 0)));
+        home_panel.add(Box.createRigidArea(new
+
+                Dimension(10, 0)));
         home_panel.add(east_panel);
-        home_panel.add(Box.createRigidArea(new Dimension(10, 0)));
+        home_panel.add(Box.createRigidArea(new
+
+                Dimension(10, 0)));
 
         // tabbedPane.setLayout(());
 
-        this.getContentPane().add(tabbedPane);
-        this.pack();
+        this.
+
+                getContentPane().
+
+                add(tabbedPane);
+        this.
+
+                pack();
 
     }
 
