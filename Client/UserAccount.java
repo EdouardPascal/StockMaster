@@ -381,9 +381,9 @@ public class UserAccount implements Serializable {
         }
     }
 
-    public void initialize_searchbar(List<String> stockname, HashMap<String, String> stock_conversion) {
+    public void initialize_searchbar(List<String> stockname) {
 
-       
+
         //take in parameters reference to the list of stockname and a hashtable with stock name as set and code as value
         Connection connection;
         //add searchbar
@@ -404,7 +404,6 @@ public class UserAccount implements Serializable {
                 name = resultSet.getString("stock_name");
 
                 stockname.add(name);
-                stock_conversion.put(name, code);
 
 
             }

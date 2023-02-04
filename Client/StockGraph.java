@@ -8,6 +8,7 @@ import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.DateTickUnitType;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.title.TextTitle;
 import org.jfree.data.time.Day;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -88,15 +89,18 @@ public class StockGraph extends JPanel {
     }
 
 
-    public StockGraph(String stock_code) throws IOException
+    public StockGraph(String stock_code, StockList stock_convertion) throws IOException
     //constructor using the stock_code
     {
 
 
         JFreeChart stock_chart = ChartFactory.createTimeSeriesChart(stock_code.toUpperCase() + " Yearly Performance",
                 "Date", "Stock Price", createDataSet(stock_code));
+        String stockname = "TSLA";
+        stockname = stock_convertion.get(stock_code);
 
-
+        TextTitle title = new TextTitle(stockname);
+        stock_chart.addSubtitle(new TextTitle(stock_convertion.get(stock_code)));
         XYPlot plot = stock_chart.getXYPlot();
         XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
         renderer.setDefaultShapesVisible(true);
