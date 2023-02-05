@@ -36,13 +36,13 @@ public class balancePane extends JPanel {
         totalMoneyPanel.setBackground(Color.white);
         totalMoneyPanel.setBorder(border);
 
-        JLabel totalMoneyLabel = new JLabel("Total Money");
+        JLabel totalMoneyLabel = new JLabel("Total Money: ");
         totalMoneyLabel.setForeground(Color.darkGray);
         totalMoneyLabel.setFont(UIManager.getFont("h3.font"));
 
         JLabel totalAmountMoney;
         try {
-            totalAmountMoney = new JLabel(String.valueOf(account.getTotal_money()));
+            totalAmountMoney = new JLabel("$" + String.valueOf(account.getTotal_money()));
             totalAmountMoney.setFont(UIManager.getFont("h3.font"));
             totalAmountMoney.setForeground(Color.black);
 
@@ -54,11 +54,11 @@ public class balancePane extends JPanel {
             availableMoneyPanel.setBorder(border);
             availableMoneyPanel.setBackground(Color.white);
 
-            JLabel availableMoneyLabel = new JLabel("Available Funds");
+            JLabel availableMoneyLabel = new JLabel("Available Funds: ");
             availableMoneyLabel.setFont(UIManager.getFont("h3.font"));
             availableMoneyLabel.setForeground(Color.darkGray);
 
-            JLabel availableAmountMoney = new JLabel(String.valueOf(account.getMoney_available()));
+            JLabel availableAmountMoney = new JLabel("$" + String.valueOf(account.getMoney_available()));
             availableAmountMoney.setFont(UIManager.getFont("h3.font"));
             availableAmountMoney.setForeground(Color.black);
 
@@ -69,12 +69,12 @@ public class balancePane extends JPanel {
             JPanel investedMoneyPanel = new JPanel();
             investedMoneyPanel.setBackground(Color.white);
 
-            JLabel investedMoneyLabel = new JLabel("Total Invested");
+            JLabel investedMoneyLabel = new JLabel("Total Invested: ");
 
             investedMoneyLabel.setFont(UIManager.getFont("h3.font"));
             investedMoneyLabel.setForeground(Color.darkGray);
 
-            JLabel investedAmountMoney = new JLabel(String.valueOf(account.getMoney_invested()));
+            JLabel investedAmountMoney = new JLabel("$" + String.valueOf(account.getMoney_invested()));
             investedAmountMoney.setFont(UIManager.getFont("h3.font"));
             investedAmountMoney.setForeground(Color.black);
 

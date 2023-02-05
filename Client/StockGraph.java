@@ -94,14 +94,21 @@ public class StockGraph extends JPanel {
     public StockGraph(String stock_code) throws IOException
     //constructor using the stock_code
     {
-
+        this.setBorder(BorderFactory.createEmptyBorder());
 
         JFreeChart stock_chart = ChartFactory.createTimeSeriesChart(stock_code.toUpperCase() + " Yearly Performance",
                 "Date", "Stock Price", createDataSet(stock_code));
 
 
         TextTitle title = new TextTitle(stockList.get(stock_code));
+        TextTitle price = null;
+        try {
+            price = new TextTitle("Current Price: $" + UserAccount.real_time_price(stock_code));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         stock_chart.addSubtitle(title);
+        stock_chart.addSubtitle(price);
 
 
         XYPlot plot = stock_chart.getXYPlot();
@@ -129,8 +136,8 @@ public class StockGraph extends JPanel {
         //chartPanel.setRangeZoomable(true);
 
 
-        chartPanel.setPreferredSize(new Dimension(500, 500));
-
+        chartPanel.setPreferredSize(new Dimension(550, 490));
+        this.setPreferredSize(new Dimension(650, 510));
         this.add(chartPanel);
 
     }

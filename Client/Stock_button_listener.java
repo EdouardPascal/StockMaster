@@ -33,9 +33,11 @@ public class Stock_button_listener implements ActionListener {
                 jSpinner.commitEdit();
                 frames.account.buy_stock(stock, (Double) jSpinner.getValue());
 
-                frames.east_panel.removeAll();
-                frames.east_panel.add(frames.buyingPanel);
-                frames.east_panel.add(Box.createRigidArea(new Dimension(0, 5)));
+                for (Component l : frames.east_panel.getComponents()) {
+                    if (l instanceof balancePane || l instanceof porfolioPane)
+                        frames.east_panel.remove(l);
+                }
+                
                 frames.east_panel.add(new balancePane(frames.account));
                 frames.east_panel.add(Box.createRigidArea(new Dimension(0, 5)));
                 frames.east_panel.add(new porfolioPane(frames.account, frames));
@@ -83,8 +85,11 @@ public class Stock_button_listener implements ActionListener {
             frames.east_panel.repaint();
 
 
-            frames.west_panel.remove(2);
-            frames.west_panel.add(new StockGraph(stock), 2);
+            for (Component l : frames.west_panel.getComponents()) {
+                if (l instanceof StockGraph)
+                    frames.west_panel.remove(l);
+            }
+            frames.west_panel.add(new StockGraph(stock));
             frames.west_panel.validate();
             frames.west_panel.repaint();
         } catch (IOException ex) {

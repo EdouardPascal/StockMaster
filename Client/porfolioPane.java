@@ -50,7 +50,7 @@ public class porfolioPane extends JPanel {
             amount.setForeground(Color.BLACK);
 
             try {
-                actual_price = new JLabel(String.valueOf(account.real_time_price(stock_code) * quantity));
+                actual_price = new JLabel("$" + String.valueOf(account.real_time_price(stock_code) * quantity));
                 actual_price.setFont(UIManager.getFont("h3.font"));
                 actual_price.setForeground(Color.BLACK);
 

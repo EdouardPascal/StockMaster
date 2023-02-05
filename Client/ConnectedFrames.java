@@ -33,6 +33,7 @@ public class ConnectedFrames extends JFrame {
     JButton home_button, buy_sell_button, transaction_buttton, logout_button;
     JMenuBar menuBar;
 
+    JPanel rectract_panel;
     JPanel top_page = new JPanel();
     JMenu account_menu;
     JMenuItem logout_item;
@@ -41,6 +42,9 @@ public class ConnectedFrames extends JFrame {
 
     HashMap<String, String> stock_convertion = new HashMap<>();
 
+    JPanel retract_choice;
+    JButton retract_button;
+    JButton deposit_button;
     JPanel east_panel = new JPanel();
     JPanel west_panel;
 
@@ -52,6 +56,9 @@ public class ConnectedFrames extends JFrame {
     JSpinner numberChooser;
     JButton transaction;
     UserAccount account;
+    SpinnerNumberModel RetractnumberModel;
+    JSpinner RetractnumberChooser;
+    JButton Retracttransaction;
 
     public ConnectedFrames(UserAccount UserAccount) throws Exception, UnsupportedLookAndFeelException, ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
 
@@ -75,8 +82,11 @@ public class ConnectedFrames extends JFrame {
                     jSpinner.commitEdit();
                     account.buy_stock(stock, (Double) jSpinner.getValue());
 
+
                     east_panel.removeAll();
                     east_panel.add(buyingPanel);
+                    east_panel.add(Box.createRigidArea(new Dimension(0, 5)));
+                    east_panel.add(rectract_panel);
                     east_panel.add(Box.createRigidArea(new Dimension(0, 5)));
                     east_panel.add(new balancePane(account));
                     east_panel.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -142,7 +152,10 @@ public class ConnectedFrames extends JFrame {
                 buy_choice.setFont(new Font("Arial", Font.BOLD, 12));
                 numberModel.setMaximum(account.getMoney_available());
                 transaction.setText("Buy " + current_string);
-
+                Border border = BorderFactory.createRaisedBevelBorder();
+                buyingPanel.setBorder(BorderFactory.createTitledBorder(border, "Buy/Sell " + current_string, TitledBorder.CENTER,
+                        TitledBorder.TOP, UIManager.getFont("h2.font"), Color.black));
+                east_panel.repaint();
                 for (ActionListener listener : transaction.getActionListeners()) {
                     transaction.removeActionListener(listener);
                 }
@@ -241,11 +254,199 @@ public class ConnectedFrames extends JFrame {
         StockGraph stockGraphPanel = new StockGraph("TSLA");
         west_panel.add(stockGraphPanel);
 
+
+        rectract_panel = new
+
+                JPanel();
+        rectract_panel.setBorder(BorderFactory.createTitledBorder(border, "Add/Retract Funds ", TitledBorder.CENTER,
+                TitledBorder.TOP, UIManager.getFont("h2.font"), Color.black));
+
+        ///////////////////////////
+
         buyingPanel = new
 
                 JPanel();
         buyingPanel.setBorder(BorderFactory.createTitledBorder(border, "Buy/Sell ", TitledBorder.CENTER,
                 TitledBorder.TOP, UIManager.getFont("h2.font"), Color.black));
+        retract_choice = new
+
+                JPanel();
+        retract_choice.setLayout(new
+
+                BoxLayout(retract_choice, BoxLayout.X_AXIS));
+
+        retract_button = new
+
+                JButton("Retract");
+
+        deposit_button = new
+
+                JButton("Deposit");
+        retract_button.setBackground(Color.white);
+        retract_button.setForeground(Color.black);
+        retract_button.setFont(new
+
+                Font("Arial", Font.PLAIN, 12));
+        deposit_button.setBackground(Color.green);
+        deposit_button.setForeground(Color.white);
+        deposit_button.setFont(new
+
+                Font("Arial", Font.BOLD, 12));
+
+        double max_amount = 0.0;
+        RetractnumberModel = new
+
+                SpinnerNumberModel(0.0, 0.0, Double.POSITIVE_INFINITY, 0.01);
+        RetractnumberChooser = new
+
+                JSpinner(RetractnumberModel);
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                RetractnumberChooser.setEditor(new JSpinner.NumberEditor(RetractnumberChooser, "###,##0.0#"));
+                JSpinner.NumberEditor jsEditor = (JSpinner.NumberEditor) RetractnumberChooser.getEditor();
+                DefaultFormatter formatter = (DefaultFormatter) jsEditor.getTextField().getFormatter();
+                formatter.setAllowsInvalid(false);
+
+            }
+        });
+
+
+        Retracttransaction = new
+
+                JButton("Add Funds ");
+        Retracttransaction.setBackground(Color.green);
+        Retracttransaction.setForeground(Color.white);
+        Retracttransaction.setFont(new
+
+                Font("Arial", Font.BOLD, 20));
+
+
+        class Add_funds_listener implements ActionListener {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    RetractnumberChooser.commitEdit();
+                } catch (Exception ex) {
+
+                }
+                double amount = (Double) RetractnumberChooser.getValue();
+                account.setMoney_available(account.getMoney_available() + amount);
+                JOptionPane.showMessageDialog(frames, "You have succesfully added $" + amount + " to your account");
+                for (Component l : east_panel.getComponents()) {
+                    if (l instanceof balancePane) east_panel.remove(l);
+
+                }
+                east_panel.add(new balancePane(account), 3);
+                east_panel.revalidate();
+                east_panel.repaint();
+            }
+        }
+
+        class Retract_funds_listener implements ActionListener {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    RetractnumberChooser.commitEdit();
+                } catch (Exception ex) {
+
+                }
+
+                double amount = (Double) RetractnumberChooser.getValue();
+                double money_available = account.getMoney_available();
+
+                if (amount > money_available) {
+                    JOptionPane.showMessageDialog(frames, "The amount you have entered is more than you own");
+                    return;
+                } else {
+                    account.setMoney_available(money_available - amount);
+                    JOptionPane.showMessageDialog(frames, "You have succesfully retracted $" + amount + " to your account");
+                    for (Component l : east_panel.getComponents()) {
+                        if (l instanceof balancePane) east_panel.remove(l);
+                    }
+
+                    east_panel.add(new balancePane(account), 3);
+                    east_panel.revalidate();
+                    east_panel.repaint();
+                }
+            }
+        }
+
+
+        Retracttransaction.addActionListener(new Add_funds_listener());
+        deposit_button.addActionListener(new ActionListener() { //what to do when click on deposit button
+
+
+            public void actionPerformed(ActionEvent e) {
+                RetractnumberModel.setMaximum(Double.POSITIVE_INFINITY);
+
+
+                retract_button.setBackground(Color.white);
+                retract_button.setForeground(Color.black);
+                retract_button.setFont(new
+
+
+                        Font("Arial", Font.PLAIN, 12));
+                deposit_button.setBackground(Color.green);
+                deposit_button.setForeground(Color.white);
+                deposit_button.setFont(new
+
+                        Font("Arial", Font.PLAIN, 12));
+                Retracttransaction.setText("Add Funds");
+                Retracttransaction.setBackground(Color.green);
+                Retracttransaction.setForeground(Color.white);
+                Retracttransaction.setFont(new
+
+                        Font("Arial", Font.BOLD, 20));
+
+                for (ActionListener l : Retracttransaction.getActionListeners()) {
+                    Retracttransaction.removeActionListener(l);
+                }
+                Retracttransaction.addActionListener(new Add_funds_listener());
+            }
+        });
+
+        retract_button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                RetractnumberModel.setMaximum(account.getMoney_available());
+
+                try {
+                    RetractnumberChooser.commitEdit();
+                } catch (Exception exception) {
+
+                }
+                retract_button.setBackground(Color.green);
+                retract_button.setForeground(Color.white);
+                retract_button.setFont(new
+
+                        Font("Arial", Font.PLAIN, 12));
+                deposit_button.setBackground(Color.white);
+                deposit_button.setForeground(Color.black);
+                deposit_button.setFont(new
+
+                        Font("Arial", Font.PLAIN, 12));
+                Retracttransaction.setText("Retract Funds");
+                Retracttransaction.setBackground(Color.green);
+                Retracttransaction.setForeground(Color.white);
+                Retracttransaction.setFont(new
+
+                        Font("Arial", Font.BOLD, 20));
+
+                for (ActionListener l : Retracttransaction.getActionListeners()) {
+                    Retracttransaction.removeActionListener(l);
+                }
+                Retracttransaction.addActionListener(new Retract_funds_listener());
+            }
+
+        });
+        retract_choice.setLayout(new BoxLayout(retract_choice, BoxLayout.X_AXIS));
+
+        retract_choice.add(deposit_button);//add button for deposit
+        retract_choice.add(retract_button);//add button for retracting
+        retract_choice.add(RetractnumberChooser);//add button for retracting
+        retract_choice.add(Retracttransaction);//add button for retracting
+
+
+        rectract_panel.add(retract_choice);
+
 
         //small panel inside buying panel to contain two buttons that will be used to use to select if we want to
         //buy or sell
@@ -296,6 +497,8 @@ public class ConnectedFrames extends JFrame {
                     east_panel.removeAll();
                     east_panel.add(buyingPanel);
                     east_panel.add(Box.createRigidArea(new Dimension(0, 5)));
+                    east_panel.add(rectract_panel);
+                    east_panel.add(Box.createRigidArea(new Dimension(0, 5)));
                     east_panel.add(new balancePane(account));
                     east_panel.add(Box.createRigidArea(new Dimension(0, 5)));
                     east_panel.add(new porfolioPane(account, frames));
@@ -324,20 +527,15 @@ public class ConnectedFrames extends JFrame {
 
                 JSpinner(numberModel);
 
-        SwingUtilities.invokeLater(new
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                numberChooser.setEditor(new JSpinner.NumberEditor(numberChooser, "###,##0.0#"));
+                JSpinner.NumberEditor jsEditor = (JSpinner.NumberEditor) numberChooser.getEditor();
+                DefaultFormatter formatter = (DefaultFormatter) jsEditor.getTextField().getFormatter();
+                formatter.setAllowsInvalid(false);
 
-                                           Runnable() {
-                                               public void run() {
-
-
-                                                   numberChooser.setEditor(new JSpinner.NumberEditor(numberChooser, "###,##0.0#"));
-                                                   JSpinner.NumberEditor jsEditor = (JSpinner.NumberEditor) numberChooser.getEditor();
-                                                   DefaultFormatter formatter = (DefaultFormatter) jsEditor.getTextField().getFormatter();
-                                                   formatter.setAllowsInvalid(false);
-
-                                                   buyingPanel.add(numberChooser);
-                                               }
-                                           });
+            }
+        });
 
 
         transaction = new
@@ -351,7 +549,7 @@ public class ConnectedFrames extends JFrame {
         Buy_Listener buy_listener = new Buy_Listener(current_string, numberChooser);
         transaction.addActionListener(buy_listener);
 
-        buyingPanel.add(transaction);
+
         buy_choice.addActionListener(e ->
 
         {
@@ -413,7 +611,8 @@ public class ConnectedFrames extends JFrame {
         buying_choice.add(buy_choice);
         buying_choice.add(sell_choice);
 
-
+        buying_choice.add(numberChooser);
+        buying_choice.add(transaction);
         //Action Listener for the portfolio button to interact with the graph
 
 
@@ -426,6 +625,9 @@ public class ConnectedFrames extends JFrame {
         east_panel.setBackground(Color.white);
         east_panel.add(buyingPanel);
         east_panel.add(largerRigidArea);
+
+        east_panel.add(rectract_panel);
+        east_panel.add(largerRigidArea);
         east_panel.add(balancePanel);
 
         porfolioPane portfolio_panel = new porfolioPane(account, this);
@@ -434,9 +636,15 @@ public class ConnectedFrames extends JFrame {
 
         east_panel.add(largerRigidArea);
         east_panel.add(portfolio_panel);
+
+
+        west_panel.setPreferredSize(new Dimension(570, 550));
+        east_panel.setPreferredSize(new Dimension(450, 550));
+
         home_panel.add(Box.createRigidArea(new
 
                 Dimension(10, 0)));
+
         home_panel.add(west_panel);
         home_panel.add(Box.createRigidArea(new
 

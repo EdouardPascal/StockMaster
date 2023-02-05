@@ -236,7 +236,7 @@ public class UserAccount implements Serializable {
     }
 
     /////////
-    public double real_time_price(String stock_code) throws
+    public static double real_time_price(String stock_code) throws
             Exception //get the real time price of stock using its code
     {
         String url = "https://www.google.com/finance/quote/" + stock_code + ":NASDAQ?hl=en";//build url using stock code
@@ -383,7 +383,7 @@ public class UserAccount implements Serializable {
 
     public void initialize_searchbar(List<String> stockname, HashMap<String, String> stock_convertion) {
 
-        
+
         //take in parameters reference to the list of stockname and a hashtable with stock name as set and code as value
         Connection connection;
         //add searchbar
